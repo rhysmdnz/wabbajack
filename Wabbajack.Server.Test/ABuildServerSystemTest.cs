@@ -184,7 +184,7 @@ namespace Wabbajack.BuildServer.Test
 
         protected string MakeURL(string path)
         {
-            return "http://localhost:8080/" + path;
+            return "http://localhost:18080/" + path;
         }
 
 

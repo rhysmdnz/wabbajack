@@ -76,6 +76,8 @@ namespace Wabbajack.Server
             services.AddSingleton<Watchdog>();
             services.AddSingleton<DiscordFrontend>();
             services.AddSingleton<AuthoredFilesCleanup>();
+            services.AddSingleton<IPFSService>();
+            services.AddSingleton<PinningService>();
             
             services.AddMvc();
             services.AddControllers()
@@ -137,6 +139,8 @@ namespace Wabbajack.Server
             app.UseService<Watchdog>();
             app.UseService<DiscordFrontend>();
             app.UseService<AuthoredFilesCleanup>();
+            app.UseService<IPFSService>();
+            app.UseService<PinningService>();
 
             app.Use(next =>
             {

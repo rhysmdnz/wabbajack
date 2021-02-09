@@ -25,7 +25,7 @@ namespace Wabbajack.Server
                     webBuilder.UseStartup<Startup>()
                         .UseKestrel(options =>
                         {
-                            options.Listen(IPAddress.Any, testMode ? 8080 : 80);
+                            options.Listen(IPAddress.Any, testMode ? 18080 : 80);
                             if (!testMode)
                             {
                                 options.Listen(IPAddress.Any, 443, listenOptions =>

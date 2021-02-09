@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
+using Ipfs.Engine;
 using Wabbajack.Common;
 using Wabbajack.Common.StatusFeed;
 using Wabbajack.Lib;
@@ -197,7 +198,13 @@ namespace Wabbajack.Test
             //Assert.Equal(File.ReadAllText(filename.Path), "Cheese for Everyone!");
         }
 
-        
+        [Fact]
+        public async Task WabbajackCDNTest()
+        {
+            
+        }
+
+
         [Fact]
         public async Task MediaFireDownload()
         {
@@ -516,7 +523,6 @@ namespace Wabbajack.Test
 
             Assert.Equal(File.ReadAllText(filename.Path), "Cheese for Everyone!");
         }*/
-
         [Fact]
         public async Task GameFileSourceDownload()
         {

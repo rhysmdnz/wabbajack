@@ -165,6 +165,8 @@ namespace Wabbajack.Common
 
         public static void VacuumDatabase()
         {
+            // We never delete Patches, so really no reason to vacuum it. 
+            return;
             using var cmd = new SQLiteCommand(_conn);
             cmd.CommandText = @"VACUUM";
             cmd.PrepareAsync();

@@ -192,7 +192,9 @@ namespace Wabbajack
                         var result = await downloader.Download(
                             new Archive(state: null!)
                             {
-                                Name = Metadata.Title, Size = Metadata.DownloadMetadata?.Size ?? 0
+                                Name = Metadata.Title, 
+                                Size = Metadata.DownloadMetadata?.Size ?? 0,
+                                Hash = Metadata.DownloadMetadata?.Hash ?? default,
                             }, Location);
                         Utils.Log($"Done downloading {Metadata.Links.MachineURL}");
 

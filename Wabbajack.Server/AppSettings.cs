@@ -5,11 +5,15 @@ namespace Wabbajack.BuildServer
 {
     public class AppSettings
     {
+
+
         public AppSettings(IConfiguration config)
         {
             config.Bind("WabbajackSettings", this);
         }
         
+        public string IPFSFolder { get; set; }
+        public AbsolutePath IPFSExe => ((AbsolutePath)IPFSFolder).Combine("ipfs.exe");
         public string DownloadDir { get; set; }
         public AbsolutePath DownloadPath => (AbsolutePath)DownloadDir;
         public string ArchiveDir { get; set; }

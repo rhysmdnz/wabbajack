@@ -12,6 +12,7 @@ using Wabbajack.Common.Serialization.Json;
 using Wabbajack.Lib.AuthorApi;
 using Wabbajack.Lib.Validation;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Wabbajack.Lib.Downloaders
 {
@@ -72,6 +73,10 @@ namespace Wabbajack.Lib.Downloaders
 
             public override async Task<bool> Download(Archive a, AbsolutePath destination)
             {
+                if (await TryDownloadViaIPFS(a, destination))
+                    return true;
+                
+                
                 destination.Parent.CreateDirectory();
                 var definition = await GetDefinition();
                 await using var fs = await destination.Create();
@@ -109,10 +114,43 @@ namespace Wabbajack.Lib.Downloaders
                 return true;
             }
 
+            private async Task<bool> TryDownloadViaIPFS(Archive archive, AbsolutePath destination)
+            {
+                var state = GetPinnedState(archive);
+                try
+                {
+                    return await state.Download(archive, destination);
+                }
+                catch (HttpException ex)
+                {
+                    if (ex.Code == 404)
+                        return false;
+                    throw;
+                }
+            }
+
             public override async Task<bool> Verify(Archive archive, CancellationToken? token)
             {
+                var state = GetPinnedState(archive);
+                if (await state.Verify(archive, token))
+                    return true;
+                
                 var definition = await GetDefinition(token);
                 return true;
+            }
+
+            private HTTPDownloader.State GetPinnedState(Archive archive)
+            {
+                Uri uri;
+                if (archive.Hash != default)
+                    uri = new Uri(Consts.WabbajackBuildServerUri + "ipfs/by_hash/" + archive.Hash.ToHex());
+                else
+                {
+                    var path = this.Url.PathAndQuery;
+                    uri = new Uri(Consts.WabbajackBuildServerUri + "ipfs/by_name/" + path);
+                }
+
+                return new HTTPDownloader.State(uri.ToString());
             }
 
             private async Task<HttpResponseMessage> GetWithCDNRetry(Http.Client client, string url, CancellationToken? token = null)

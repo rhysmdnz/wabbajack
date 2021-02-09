@@ -653,6 +653,21 @@ CREATE TABLE [dbo].[NexusModInfos](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
     ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
     GO
+
+/****** Object:  Table [dbo].[IPFSPins]  ******/
+
+CREATE TABLE [dbo].[IPFSPins](
+                                 [Hash] [bigint] NOT NULL,
+                                 [Name] [nvarchar](max) NULL,
+	[CID] [varchar](46) NOT NULL,
+ CONSTRAINT [PK_IPFSPins] PRIMARY KEY CLUSTERED 
+(
+	[Hash] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+    
 /****** Object:  Table [dbo].[NexusModPermissions]    Script Date: 12/29/2020 8:55:04 PM ******/
     SET ANSI_NULLS ON
     GO
