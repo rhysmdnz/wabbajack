@@ -40,6 +40,7 @@ namespace Wabbajack
         public readonly Lazy<InstallerVM> Installer;
         public readonly Lazy<SettingsVM> SettingsPane;
         public readonly Lazy<ModListGalleryVM> Gallery;
+        public readonly Lazy<PlayVM> Play;
         public readonly ModeSelectionVM ModeSelectionVM;
         public readonly UserInterventionHandlers UserInterventionHandlers;
 
@@ -61,6 +62,8 @@ namespace Wabbajack
             Compiler = new Lazy<CompilerVM>(() => new CompilerVM(this));
             SettingsPane = new Lazy<SettingsVM>(() => new SettingsVM(this));
             Gallery = new Lazy<ModListGalleryVM>(() => new ModListGalleryVM(this));
+            Play = new Lazy<PlayVM>(() => new PlayVM(this));
+            
             ModeSelectionVM = new ModeSelectionVM(this);
             UserInterventionHandlers = new UserInterventionHandlers(this);
 

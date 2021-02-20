@@ -37,6 +37,9 @@ namespace Wabbajack
                 this.WhenAny(x => x.ViewModel.CompileCommand)
                     .BindToStrict(this, x => x.CompileButton.Command)
                     .DisposeWith(dispose);
+                this.WhenAny(x => x.ViewModel.PlayCommand)
+                    .BindToStrict(this, x => x.PlayButton.Command)
+                    .DisposeWith(dispose);
             });
         }
     }

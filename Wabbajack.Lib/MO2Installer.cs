@@ -22,6 +22,8 @@ using File = Alphaleonis.Win32.Filesystem.File;
 using Path = Alphaleonis.Win32.Filesystem.Path;
 using SectionData = Wabbajack.Common.SectionData;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using Wabbajack.Lib.ModListRegistry;
 using Wabbajack.VirtualFileSystem;
 
 namespace Wabbajack.Lib
@@ -33,6 +35,8 @@ namespace Wabbajack.Lib
         public override ModManager ModManager => ModManager.MO2;
 
         public AbsolutePath? GameFolder { get; set; }
+        
+        public ModlistMetadata? ModlistMetadata { get; set; }
 
         public MO2Installer(AbsolutePath archive, ModList modList, AbsolutePath outputFolder, AbsolutePath downloadFolder, SystemParameters parameters)
             : base(
@@ -52,6 +56,13 @@ namespace Wabbajack.Lib
 
         protected override async Task<bool> _Begin(CancellationToken cancel)
         {
+            var metadataLocation = ModListArchive.WithExtension(Consts.MetaDataExtension);
+            
+            ModlistMetadata = metadataLocation.IsFile ? metadataLocation.FromJson<ModlistMetadata>() : null;
+
+            if (ModlistMetadata != default)
+                Utils.Log($"Installing: {ModlistMetadata.Links.MachineURL} {ModList.Version}");
+            
             if (cancel.IsCancellationRequested) return false;
             await Metrics.Send(Metrics.BeginInstall, ModList.Name);
             Utils.Log("Configuring Processor");
@@ -196,6 +207,7 @@ namespace Wabbajack.Lib
 
             UpdateTracker.NextStep("Updating System-specific ini settings");
             SetScreenSizeInPrefs();
+            await WriteToInstalledRegistry();
             
             UpdateTracker.NextStep("Compacting files");
             await CompactFiles();
@@ -205,6 +217,20 @@ namespace Wabbajack.Lib
             await Metrics.Send(Metrics.FinishInstall, ModList.Name);
 
             return true;
+        }
+
+        private async Task WriteToInstalledRegistry()
+        {
+            var newEntry = new InstalledList
+            {
+                DownloadLocation = DownloadFolder,
+                InstalledHash = (await ModListArchive.FileHashCachedAsync())!.Value,
+                WabbajackFileLocation = ModListArchive,
+                InstallLocation = OutputFolder,
+                InstalledVersion = ModList.Version,
+                Metadata = ModlistMetadata ?? new ModlistMetadata(),
+            };
+            await InstalledListsData.Add(newEntry);
         }
 
         private async Task CompactFiles()

@@ -104,9 +104,29 @@ namespace Wabbajack
                     {
                         Error = null;
                         var list = await ModlistMetadata.LoadFromGithub();
+                        var installedLists = (await InstalledListsData.Load()).Lists
+                            .GroupBy(g => g.Metadata?.Links.MachineURL ?? "")
+                            .ToDictionary(d => d.Key, d=> d.First());
+                        
                         Error = ErrorResponse.Success;
                         return list
                             // Sort randomly initially, just to give each list a fair shake
+                            .Select(entry =>
+                            {
+                                if (installedLists.TryGetValue(entry.Links.MachineURL, out var found))
+                                {
+                                    if (found.InstalledHash != entry.DownloadMetadata.Hash)
+                                    {
+                                        entry.tags.Add("Installed");
+                                    }
+                                    else
+                                    {
+                                        entry.tags.Add("Update Available!");
+                                    }
+                                }
+
+                                return entry;
+                            })
                             .Shuffle(random)
                             .AsObservableChangeSet(x => x.DownloadMetadata?.Hash ?? Hash.Empty);
                     }

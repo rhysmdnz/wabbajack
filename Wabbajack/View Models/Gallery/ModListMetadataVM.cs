@@ -196,6 +196,8 @@ namespace Wabbajack
                             }, Location);
                         Utils.Log($"Done downloading {Metadata.Links.MachineURL}");
 
+                        await Metadata.ToJsonAsync(Location.WithExtension(Consts.MetaDataExtension));
+
                         // Want to rehash to current file, even if failed?
                         await Location.FileHashCachedAsync();
                         Utils.Log($"Done hashing {Metadata.Links.MachineURL}");
