@@ -45,5 +45,23 @@ namespace Wabbajack.Lib.ModListRegistry
         public AbsolutePath DownloadLocation { get; set; }
         public AbsolutePath WabbajackFileLocation { get; set; }
         public ModlistMetadata? Metadata { get; set; } = new();
+
+        public async Task Play()
+        {
+            var ini = InstallLocation.Combine("ModOrganizer.ini").LoadIniFile();
+            var exe1 = (string)ini.customExecutables["1\\title"];
+
+            var process = new ProcessHelper
+            {
+                Path = (AbsolutePath)"c:\\Windows\\system32\\cmd.exe", 
+                Arguments = new object[] {"/C", "ModOrganizer.exe", exe1},
+                WorkingDirectory = InstallLocation,
+                WorkaroundMode = true
+            };
+            Utils.Log(process.Path.ToString());
+            Utils.Log(string.Join(", ", process.Arguments.Select(a => a.ToString())));
+            process.Output.Subscribe(p => Utils.Log(p.Line));
+            await process.Start();
+        }
     }
 }

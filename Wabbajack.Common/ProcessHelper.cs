@@ -17,8 +17,15 @@ namespace Wabbajack.Common
         }
 
         public AbsolutePath Path { get; set; }
+        public AbsolutePath? WorkingDirectory { get; set; } = default;
         public IEnumerable<object> Arguments { get; set; } = Enumerable.Empty<object>();
 
+        /// <summary>
+        /// Starts the process in an enhanced compatability mode for applications like ModOrganizer2 that may be doing
+        /// wonky things with Windows APIs and permissions. MO2 (being started via this code) can't launch Skyrim without
+        /// this being set to true
+        /// </summary>
+        public bool WorkaroundMode { get; set; } = false;
         public bool LogError { get; set; } = true;
         
         public readonly Subject<(StreamType Type, string Line)> Output = new Subject<(StreamType Type, string)>();
@@ -45,18 +52,26 @@ namespace Wabbajack.Common
             {
                 FileName = (string)Path,
                 Arguments = string.Join(" ", args),
-                RedirectStandardError = true,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
+                RedirectStandardError = !WorkaroundMode,
+                RedirectStandardInput = !WorkaroundMode,
+                RedirectStandardOutput = !WorkaroundMode,
+                UseShellExecute = WorkaroundMode,
+                CreateNoWindow = !WorkaroundMode,
+                LoadUserProfile = true,
             };
+
+            if (WorkaroundMode)
+                info.WindowStyle = ProcessWindowStyle.Normal;
+
+            if (WorkingDirectory != default)
+                info.WorkingDirectory = (string)WorkingDirectory!.Value;
+            
             var finished = new TaskCompletionSource<int>();
 
             var p = new Process
             {
                 StartInfo = info,
-                EnableRaisingEvents = true
+                EnableRaisingEvents = true,
             };
             EventHandler Exited = (sender, args) =>
             {
@@ -81,8 +96,12 @@ namespace Wabbajack.Common
             p.ErrorDataReceived += ErrorEventHandler;
 
             p.Start();
-            p.BeginErrorReadLine();
-            p.BeginOutputReadLine();
+            if (!WorkaroundMode)
+            {
+                p.BeginErrorReadLine();
+                p.BeginOutputReadLine();
+            }
+
             ChildProcessTracker.AddProcess(p);
 
             try

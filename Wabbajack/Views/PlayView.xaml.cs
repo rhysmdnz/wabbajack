@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using CefSharp.Wpf;
 using ReactiveUI;
 using Wabbajack.Lib.Http;
 
@@ -15,7 +16,10 @@ namespace Wabbajack.Views
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-
+                this.WhenAny(x => x.ViewModel.BrowserAddress)
+                    .BindToStrict(this, x => x.Browser.Address)
+                    .DisposeWith(dispose);
+                
                 this.WhenAny(x => x.ViewModel.List)
                     .Select(x => x.Metadata?.Title ?? "")
                     .BindToStrict(this, x => x.TopProgressBar.Title)
@@ -32,8 +36,12 @@ namespace Wabbajack.Views
                     .BindToStrict(this, x => x.BackButton.Command)
                     .DisposeWith(dispose);
                 
-                this.WhenAny(x => x.ViewModel.Changelog)
-                    .BindToStrict(this, x => x.Changelog.Markdown)
+                this.WhenAny(x => x.ViewModel.BrowseLocalFilesCommand)
+                    .BindToStrict(this, x => x.BrowseLocalFiles.Command)
+                    .DisposeWith(dispose);
+                
+                this.WhenAny(x => x.ViewModel.PlayCommand)
+                    .BindToStrict(this, x => x.PlayButton.Command)
                     .DisposeWith(dispose);
             });
         }
