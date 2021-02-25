@@ -43,6 +43,10 @@ namespace Wabbajack.Views
                 this.WhenAny(x => x.ViewModel.PlayCommand)
                     .BindToStrict(this, x => x.PlayButton.Command)
                     .DisposeWith(dispose);
+                
+                this.WhenAny(x => x.ViewModel.CopyFilesCommand)
+                    .BindToStrict(this, x => x.CopyGameFilesButton.Command)
+                    .DisposeWith(dispose);
             });
         }
     }
