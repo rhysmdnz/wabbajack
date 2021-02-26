@@ -44,12 +44,19 @@ namespace Wabbajack
             PlayCommand = ReactiveCommand.Create(async () =>
             {
                 var lists = await InstalledListsData.Load();
-                if (lists.Lists.Count == 0) 
-                    mainVM.NavigateTo(mainVM.Gallery.Value);
-                else
+                switch (lists.Lists.Count)
                 {
-                    mainVM.Play.Value.List = lists.Lists.First();
-                    mainVM.NavigateTo(mainVM.Play.Value);
+                    case 0:
+                        mainVM.NavigateTo(mainVM.Gallery.Value);
+                        break;
+                    case 1:
+                        mainVM.Play.Value.List = lists.Lists.First();
+                        mainVM.NavigateTo(mainVM.Play.Value);
+                        break;
+                    default:
+                        mainVM.InstalledListSelection.Value.ListSources = lists;
+                        mainVM.NavigateTo(mainVM.InstalledListSelection.Value);
+                        break;
                 }
             });
         }
