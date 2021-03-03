@@ -57,7 +57,8 @@ namespace Wabbajack.Common
                 RedirectStandardOutput = !WorkaroundMode,
                 UseShellExecute = WorkaroundMode,
                 CreateNoWindow = !WorkaroundMode,
-                LoadUserProfile = true,
+                
+                //LoadUserProfile = true,
             };
 
             if (WorkaroundMode)
@@ -73,6 +74,7 @@ namespace Wabbajack.Common
                 StartInfo = info,
                 EnableRaisingEvents = true,
             };
+            
             EventHandler Exited = (sender, args) =>
             {
                 finished.SetResult(p.ExitCode);

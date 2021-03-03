@@ -29,8 +29,8 @@
             <DataTemplate DataType="{x:Type local:PlayVM}">
                 <views:PlayView ViewModel="{Binding}" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type local:InstalledListSelectionVM}">
-                <views:InstalledListSelectionView ViewModel="{Binding}" />
+            <DataTemplate DataType="{x:Type local:InstalledListGalleryVM}">
+                <local:InstalledListGalleryView ViewModel="{Binding}" />
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:InstallerVM}">
                 <local:InstallationView ViewModel="{Binding}" />

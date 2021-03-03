@@ -61,6 +61,12 @@ namespace Wabbajack.Lib.ModListRegistry
 
             [JsonProperty("readme")]
             public string Readme { get; set; } = string.Empty;
+            
+            [JsonProperty("changelog")]
+            public string ChangeLog { get; set; } = string.Empty;
+            
+            [JsonProperty("news")]
+            public string News { get; set; } = string.Empty;
 
             [JsonProperty("download")]
             public string Download { get; set; } = string.Empty;

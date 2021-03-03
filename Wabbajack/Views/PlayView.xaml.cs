@@ -16,7 +16,7 @@ namespace Wabbajack.Views
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                this.WhenAny(x => x.ViewModel.BrowserAddress)
+                this.WhenAny(x => x.ViewModel.ReadmeBrowserAddress)
                     .BindToStrict(this, x => x.Browser.Address)
                     .DisposeWith(dispose);
                 
@@ -26,7 +26,7 @@ namespace Wabbajack.Views
                     .DisposeWith(dispose);
                 
                 this.WhenAny(x => x.ViewModel.List)
-                    .Select(x => x.Metadata?.Links.ImageUrlFast ?? "")
+                    .Select(x => x.Metadata?.Links.ImageUri ?? "")
                     .Where(uri => uri != default)
                     .DownloadBitmapImage(e => {})
                     .BindToStrict(this, x => x.Image.Source)

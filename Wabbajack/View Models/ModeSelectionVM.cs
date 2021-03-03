@@ -50,7 +50,7 @@ namespace Wabbajack
                         mainVM.NavigateTo(mainVM.Gallery.Value);
                         break;
                     case 1:
-                        mainVM.Play.Value.List = lists.Lists.First();
+                        await mainVM.Play.Value.SetList(lists.Lists.First());
                         mainVM.NavigateTo(mainVM.Play.Value);
                         break;
                     default:

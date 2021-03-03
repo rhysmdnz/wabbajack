@@ -61,7 +61,7 @@ namespace Wabbajack.Lib
             return (hash, (Result)await process.Start());
         }
 
-        private static SignatureChecker ExecutableChecker = new SignatureChecker(Definitions.FileType.DLL, 
+        public static SignatureChecker ExecutableChecker = new SignatureChecker(Definitions.FileType.DLL, 
             Definitions.FileType.EXE, 
             Definitions.FileType.PIF, 
             Definitions.FileType.QXD, 

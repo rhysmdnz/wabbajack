@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -13,6 +14,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Wabbajack.Common;
 using Wabbajack.Lib;
+using Wabbajack.Lib.Downloaders;
 using Wabbajack.Lib.Http;
 using Wabbajack.Lib.ModListRegistry;
 
@@ -21,7 +23,7 @@ namespace Wabbajack
     public class PlayVM : ViewModel
     {
         [Reactive]
-        public InstalledList List { get; set; }
+        public InstalledList List { get; protected set; }
         
         [Reactive]
         public string Changelog { get; set; }
@@ -34,20 +36,31 @@ namespace Wabbajack
         
 
         [Reactive]
-        public string BrowserAddress { get; set; }
+        public string ReadmeBrowserAddress { get; set; }
+        
+        [Reactive]
+        public string ChangelogBrowserAddress { get; set; }
+        
+        [Reactive]
+        public string NewsBrowserAddress { get; set; }
 
         private Subject<bool> _isIdle = new();
 
         [Reactive]
         private bool NeedsGameFileFolderCopy { get; set; }
 
+        [Reactive] private HashSet<RelativePath> GameFiles { get; set; } = new();
+
         public PlayVM(MainWindowVM mainWindowVM)
         {
             this.ObservableForProperty(vm => vm.List)
-                .Select(m => m.Value.Metadata?.Links.MachineURL)
+                .Select(m => m.Value.Metadata!)
                 .Where(m => m != default)
-                .Select(x => $"https://www.wabbajack.org/#/modlists/info?machineURL={x}")
-                .BindToStrict(this, x => x.BrowserAddress);
+                .Select(m => m.Links.Readme.EndsWith(".md", StringComparison.InvariantCultureIgnoreCase) 
+                    ? $"https://www.wabbajack.org/#/modlists/info?machineURL={m.Links.MachineURL}" 
+                    : m.Links.Readme)
+                .BindToStrict(this, x => x.ReadmeBrowserAddress)
+                .DisposeWith(CompositeDisposable);
 
             BrowseLocalFilesCommand = ReactiveCommand.Create(() =>
             {
@@ -96,16 +109,28 @@ namespace Wabbajack
                 .Merge(_isIdle.Select(_ => this.List))
                 .Where(lst => lst != default)
                 .Select(lst => GameFolderFiles())
-                .Select(NeedsGameFileUpdate)
-                .BindToStrict(this, x => x.NeedsGameFileFolderCopy);
+                .SelectAsync(NeedsGameFileUpdate)
+                .BindToStrict(this, x => x.NeedsGameFileFolderCopy)
+                .DisposeWith(CompositeDisposable);
         }
 
 
 
+        public async Task SetList(InstalledList list)
+        {
+            var data = await ClientAPI.GetGameFilesFromGithub(list.Metadata!.Game,
+                list.Metadata!.Game.MetaData().InstalledVersion);
+            GameFiles = data.Select(gf => ((GameFileSourceDownloader.State)gf.State).GameFile).ToHashSet();
+            List = list;
+        }
 
         private HashSet<Extension> _nonCriticalGameFiles = new() {new Extension(".json"), new Extension(".txt"), new Extension(".ini")};
-        private bool NeedsGameFileUpdate(List<(RelativePath Path, long Size)> lst)
+        private HashSet<Extension> _criticalGameFiles = new() {new Extension(".exe"), new Extension(".dll")};
+        private async Task<bool> NeedsGameFileUpdate(List<(RelativePath Path, long Size)> lst)
         {
+            var gff = List.InstallLocation.Combine(Consts.GameFolderFilesDir);
+            if (!gff.Exists) return false;
+            
             var gamePath = List.Metadata!.Game.MetaData().GameLocation();
             foreach (var (relativePath, size) in lst)
             {
@@ -115,10 +140,24 @@ namespace Wabbajack
                     if (!path.Exists)
                         return true;
                 }
+
                 else
                 {
                     if (!path.Exists || path.Size != size)
                         return true;
+                }
+                
+
+            }
+            
+            var gameFolder = List.Metadata!.Game.MetaData().GameLocation();
+
+            foreach (var file in gameFolder.EnumerateFiles())
+            {
+                var relPath = file.RelativeTo(gameFolder);
+                if (_criticalGameFiles.Contains(file.Extension) && !GameFiles.Contains(relPath) && !relPath.RelativeTo(gff).Exists)
+                {
+                    return true;
                 }
             }
 
@@ -147,10 +186,21 @@ namespace Wabbajack
 
                 await gff.Combine("enbseries").DeleteDirectory();
                 await gff.Combine("enbcache").DeleteDirectory();
+                await gff.Combine("reshade").DeleteDirectory();
+                
+                foreach (var file in gameFolder.EnumerateFiles())
+                {
+                    if (_criticalGameFiles.Contains(file.Extension) && !GameFiles.Contains(file.RelativeTo(gameFolder)))
+                    {
+                        await file.DeleteAsync();
+                    }
+                }
+                
                 foreach (var (relativePath, _) in files)
                 {
                     var src = relativePath.RelativeTo(List.InstallLocation.Combine(Consts.GameFolderFilesDir));
                     var dst = relativePath.RelativeTo(gameFolder);
+                    dst.Parent.CreateDirectory();
                     await src.CopyToAsync(dst);
                 }
             }
@@ -159,7 +209,5 @@ namespace Wabbajack
                 _isIdle.OnNext(true);
             }
         }
-        
-        
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using Wabbajack.Common;
 using Wabbajack.Common.Serialization.Json;
 
@@ -48,20 +50,45 @@ namespace Wabbajack.Lib.ModListRegistry
 
         public async Task Play()
         {
+            if (Process.GetProcessesByName("ModOrganizer.exe").Any())
+            {
+                MessageBox.Show("ModOrganizer.exe is already running please exit it now", "Can't Start Game");
+                return;
+            }
+
             var ini = InstallLocation.Combine("ModOrganizer.ini").LoadIniFile();
             var exe1 = (string)ini.customExecutables["1\\title"];
 
+            await using var tmpFile = new TempFile(new Extension(".bat"));
+            await tmpFile.Path.WriteAllLinesAsync(string.Join(" ", new []
+            {
+                "start",
+                "\"\"",
+                "\"" + InstallLocation.Combine("ModOrganizer.exe") + "\"",
+                exe1
+            }));
+
             var process = new ProcessHelper
             {
-                Path = (AbsolutePath)"c:\\Windows\\system32\\cmd.exe", 
-                Arguments = new object[] {"/C", "ModOrganizer.exe", exe1},
+                Path = AbsolutePath.WindowsFolder.Combine("explorer.exe"), 
+                Arguments = new object[] {tmpFile.Path},
                 WorkingDirectory = InstallLocation,
-                WorkaroundMode = true
+                WorkaroundMode = false
             };
             Utils.Log(process.Path.ToString());
             Utils.Log(string.Join(", ", process.Arguments.Select(a => a.ToString())));
             process.Output.Subscribe(p => Utils.Log(p.Line));
             await process.Start();
+
+            Process? proc = default;
+            while (proc == default)
+            {
+                proc = Process.GetProcessesByName("ModOrganizer.exe").FirstOrDefault();
+                await Task.Delay(500);
+            }
+
+            await proc!.WaitForExitAsync();
         }
+        
     }
 }
