@@ -10,9 +10,12 @@ using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using CefSharp;
 using CefSharp.Wpf;
+using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Wabbajack.Common;
+using Wabbajack.Common.StatusFeed;
 using Wabbajack.Lib;
 using Wabbajack.Lib.Downloaders;
 using Wabbajack.Lib.Http;
@@ -20,15 +23,17 @@ using Wabbajack.Lib.ModListRegistry;
 
 namespace Wabbajack
 {
-    public class PlayVM : ViewModel
+    public class PlayVM : BackNavigatingVM
     {
+        public MainWindowVM MWVM { get; set; }
+        
+        public ObservableCollectionExtended<IStatusMessage> Log => MWVM.Log;
+        
         [Reactive]
         public InstalledList List { get; protected set; }
         
         [Reactive]
         public string Changelog { get; set; }
-
-        public ReactiveCommand<Unit, Unit> BackCommand { get; }
         public ReactiveCommand<Unit, Unit> PlayCommand { get; }
         
         public ReactiveCommand<Unit, Unit> BrowseLocalFilesCommand { get; set; }
@@ -50,9 +55,11 @@ namespace Wabbajack
         private bool NeedsGameFileFolderCopy { get; set; }
 
         [Reactive] private HashSet<RelativePath> GameFiles { get; set; } = new();
+        
 
-        public PlayVM(MainWindowVM mainWindowVM)
+        public PlayVM(MainWindowVM mainWindowVM) : base(mainWindowVM)
         {
+            MWVM = mainWindowVM;
             this.ObservableForProperty(vm => vm.List)
                 .Select(m => m.Value.Metadata!)
                 .Where(m => m != default)
@@ -62,17 +69,12 @@ namespace Wabbajack
                 .BindToStrict(this, x => x.ReadmeBrowserAddress)
                 .DisposeWith(CompositeDisposable);
 
+
             BrowseLocalFilesCommand = ReactiveCommand.Create(() =>
             {
                 Process.Start("explorer.exe", List.InstallLocation.ToString());
             });
-            
-            BackCommand = ReactiveCommand.Create(
-                execute: () =>
-                {
-                    mainWindowVM.NavigateTo(mainWindowVM.ModeSelectionVM);
-                });
-            
+
             PlayCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
@@ -116,6 +118,7 @@ namespace Wabbajack
 
 
 
+
         public async Task SetList(InstalledList list)
         {
             var data = await ClientAPI.GetGameFilesFromGithub(list.Metadata!.Game,
@@ -130,6 +133,9 @@ namespace Wabbajack
         {
             var gff = List.InstallLocation.Combine(Consts.GameFolderFilesDir);
             if (!gff.Exists) return false;
+
+            bool needsUpdate = false;
+            List<string> updates = new List<string>();
             
             var gamePath = List.Metadata!.Game.MetaData().GameLocation();
             foreach (var (relativePath, size) in lst)
@@ -138,13 +144,19 @@ namespace Wabbajack
                 if (_nonCriticalGameFiles.Contains(path.Extension))
                 {
                     if (!path.Exists)
-                        return true;
+                    {
+                        updates.Add($"Copy: {relativePath}");
+                        needsUpdate = true;
+                    }
                 }
 
                 else
                 {
                     if (!path.Exists || path.Size != size)
-                        return true;
+                    {
+                        updates.Add($"Copy: {relativePath}");
+                        needsUpdate = true;
+                    }
                 }
                 
 
@@ -157,11 +169,23 @@ namespace Wabbajack
                 var relPath = file.RelativeTo(gameFolder);
                 if (_criticalGameFiles.Contains(file.Extension) && !GameFiles.Contains(relPath) && !relPath.RelativeTo(gff).Exists)
                 {
-                    return true;
+                    updates.Add($"Delete: {relPath}");
+                    needsUpdate = true;
                 }
             }
 
-            return false;
+            if (needsUpdate)
+            {
+                Utils.Log("Game file updates are required:");
+                foreach (var itm in updates)
+                    Utils.Log($"  {itm}");
+            }
+            else
+            {
+                Utils.Log("No game files need to be updated");
+            }
+
+            return needsUpdate;
         }
 
         public List<(RelativePath, long)> GameFolderFiles()
