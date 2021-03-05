@@ -34,29 +34,26 @@ namespace Wabbajack.Views
                     .DownloadBitmapImage(e => {})
                     .BindToStrict(this, x => x.DetailImage.Image)
                     .DisposeWith(dispose);
-
-                /*
-                this.WhenAny(x => x.ViewModel.ReadmeBrowserAddress)
-                    .BindToStrict(this, x => x.Browser.Address)
+                
+                this.WhenAny(x => x.ViewModel.CopyFilesCommand)
+                    .BindToStrict(this, x => x.CopyGameFilesButton.Command)
                     .DisposeWith(dispose);
                 
-
-                
-
-
-                
                 this.WhenAny(x => x.ViewModel.BrowseLocalFilesCommand)
-                    .BindToStrict(this, x => x.BrowseLocalFiles.Command)
+                    .BindToStrict(this, x => x.InstallFolderButton.Command)
                     .DisposeWith(dispose);
                 
                 this.WhenAny(x => x.ViewModel.PlayCommand)
                     .BindToStrict(this, x => x.PlayButton.Command)
                     .DisposeWith(dispose);
                 
-                this.WhenAny(x => x.ViewModel.CopyFilesCommand)
-                    .BindToStrict(this, x => x.CopyGameFilesButton.Command)
+                this.WhenAny(x => x.ViewModel.ReadmeCommand)
+                    .BindToStrict(this, x => x.ReadmeButton.Command)
                     .DisposeWith(dispose);
-                    */
+                
+                this.WhenAny(x => x.ViewModel.ChangelogCommand)
+                    .BindToStrict(this, x => x.ChangelogButton.Command)
+                    .DisposeWith(dispose);
             });
         }
     }

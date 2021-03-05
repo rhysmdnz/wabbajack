@@ -1,50 +1,32 @@
 <html>
 <head>
-    <script lang="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>XW
     <link rel="stylesheet" href="https://raw.githubusercontent.com/sindresorhus/github-markdown-css/main/github-markdown.css">
-    <style>
-        body {
-            font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-            background-color: rgb(34, 34, 34);
-            color: #fff;
-            margin: 0;
-            font-size: 1rem;
-            text-align: left;
-        }
-
-        a {
-            color: #fff;
-            text-decoration: none;
-            background-color: transparent;
-        }
-
-        code {
-            font-family: Consolas,"courier new",serif;
-            color: #f5d67b;
-            background-color: #001628;
-            padding: 2px;
-            font-size: 105%;
-        }
-    </style>
 </head>
 <body>
 
 <script lang="javascript">
-    var url = "https://raw.githubusercontent.com/TitansBane/Elysium/master/README.md";
+    var params = new URLSearchParams(window.location.search);
+    var url = params.get("url");
     fetch(url).then(function (response) {
-        let converter = new showdown.Converter();
         response.text().then(txt => {
-            let html = converter.makeHtml(txt);
-            document.getElementById("markdownBody").innerHTML=html;
+            fetch("https://api.github.com/markdown",
+                    {method: "POST",
+                        body: JSON.stringify({text: txt, mode: "gfm", context: "TitansBane/Elysium"})})
+                    .then(function (response) {
+                        response.text().then(txt2 => {
+                            document.getElementById("markdownBody").innerHTML=txt2;
+                        })
+                    });
+
         });
 
     });
-    
+
 </script>
 <article class="markdown-body">
-<div id="markdownBody" class="markdown-body">
-    
-</div>
+    <div id="markdownBody" class="markdown-body">
+
+    </div>
 </article>
 </body>
 </html>

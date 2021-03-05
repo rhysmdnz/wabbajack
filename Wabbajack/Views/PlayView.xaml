@@ -46,7 +46,6 @@
             <Border BorderBrush="{StaticResource BorderInterestBrush}" BorderThickness="1,0,1,1">
                 <Grid>
                     <local:DetailImageView x:Name="DetailImage" />
-                    <mahapps:ProgressRing x:Name="ModlistLoadingRing" />
                 </Grid>
             </Border>
             <Grid
@@ -244,7 +243,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Button
-                    x:Name="GoToInstallButton"
+                    x:Name="InstallFolderButton"
                     Width="50"
                     Height="50"
                     Style="{StaticResource CircleButtonStyle}">
@@ -267,7 +266,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Button
-                    x:Name="OpenReadmeButton"
+                    x:Name="ReadmeButton"
                     Width="50"
                     Height="50"
                     Style="{StaticResource CircleButtonStyle}">
@@ -289,7 +288,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Button Grid.Row="0"
-                        x:Name="BackButton3"
+                        x:Name="ChangelogButton"
                         Width="50"
                         Height="50"
                         Style="{StaticResource CircleButtonStyle}">
@@ -313,7 +312,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Button Grid.Row="0"
-                        x:Name="BackButton2"
+                        x:Name="CopyGameFilesButton"
                         Width="50"
                         Height="50"
                         Style="{StaticResource CircleButtonStyle}">
@@ -336,7 +335,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Button
-                    x:Name="CloseButton"
+                    x:Name="PlayButton"
                     Width="50"
                     Height="50"
                     Style="{StaticResource CircleButtonStyle}">
@@ -344,7 +343,7 @@
                         Width="25"
                         Height="25"
                         Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
-                        Kind="Check" />
+                        Kind="Play" />
                 </Button>
                 <TextBlock Grid.Row="1"
                     Margin="0,10,0,0"

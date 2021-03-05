@@ -168,4 +168,17 @@ namespace Wabbajack.Lib.ModListRegistry
         public bool HasFailures => Failed > 0;
     }
 
+    [JsonName("NewsItem")]
+    public class NewsItem
+    {
+        [JsonProperty("text")]
+        public string Text { get; set; } = "";
+        
+        [JsonProperty("link")]
+        public Uri? Link { get; set; }
+        
+        [JsonProperty("image")]
+        public Uri? Image { get; set; }
+    }
+
 }

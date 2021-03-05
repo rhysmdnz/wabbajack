@@ -8,6 +8,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
+using System.Web;
 using CefSharp;
 using CefSharp.Wpf;
 using DynamicData;
@@ -35,6 +36,8 @@ namespace Wabbajack
         [Reactive]
         public string Changelog { get; set; }
         public ReactiveCommand<Unit, Unit> PlayCommand { get; }
+        public ReactiveCommand<Unit, Unit> ReadmeCommand { get; }
+        public ReactiveCommand<Unit, Unit> ChangelogCommand { get; }
         
         public ReactiveCommand<Unit, Unit> BrowseLocalFilesCommand { get; set; }
         public ReactiveCommand<Unit, Unit> CopyFilesCommand { get; set; }
@@ -71,6 +74,21 @@ namespace Wabbajack
 
 
             BrowseLocalFilesCommand = ReactiveCommand.Create(() =>
+            {
+                Process.Start("explorer.exe", List.InstallLocation.ToString());
+            });
+            
+            ReadmeCommand = ReactiveCommand.Create(() =>
+            {
+                Utils.OpenWebsite(new Uri($"https://build.wabbajack.org/ReadmeTemplate.html?url={HttpUtility.UrlEncode(List.Metadata!.Links.Readme)}"));
+            });
+            
+            ChangelogCommand = ReactiveCommand.Create(() =>
+            {
+                Utils.OpenWebsite(new Uri($"https://build.wabbajack.org/ReadmeTemplate.html?url={HttpUtility.UrlEncode(List.Metadata!.Links.ChangeLog)}"));
+            });
+            
+            PlayCommand = ReactiveCommand.Create(() =>
             {
                 Process.Start("explorer.exe", List.InstallLocation.ToString());
             });
