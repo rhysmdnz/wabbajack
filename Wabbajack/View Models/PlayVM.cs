@@ -59,6 +59,15 @@ namespace Wabbajack
 
         [Reactive] private HashSet<RelativePath> GameFiles { get; set; } = new();
         
+        [Reactive]
+        private NewsItem[] News { get; set; }
+        
+        [Reactive]
+        private int Slide { get; set; }
+        
+        [Reactive]
+        public NewsItem CurrentNews { get; set; }
+        
 
         public PlayVM(MainWindowVM mainWindowVM) : base(mainWindowVM)
         {
@@ -123,6 +132,27 @@ namespace Wabbajack
                     .CombineLatest(this.WhenAny(x => x.NeedsGameFileFolderCopy))
                     .Select(state => state.First && state.Second)
                     .ObserveOnGuiThread());
+            
+            this.WhenAny(x => x.List)
+                .Do(x =>
+                {
+                    News = default;
+                    Slide = 0;
+                    CurrentNews = default;
+                })
+                .Where(x => x != default && x.Metadata?.Links.News != default)
+                .SelectAsync(async x => await NewsItem.LoadNews(x.Metadata!.Links.News))
+                .BindToStrict(this, x => x.News)
+                .DisposeWith(CompositeDisposable);
+
+            this.WhenAny(x => x.News)
+                .Subscribe(x =>
+                {
+                    Slide = 0;
+                    if (News != default)
+                        CurrentNews = News[0];
+                }).DisposeWith(CompositeDisposable);
+                
 
 
             this.WhenAny(x => x.List)
@@ -132,6 +162,30 @@ namespace Wabbajack
                 .SelectAsync(NeedsGameFileUpdate)
                 .BindToStrict(this, x => x.NeedsGameFileFolderCopy)
                 .DisposeWith(CompositeDisposable);
+
+            Task.Run(async () =>
+            {
+                while (!CompositeDisposable.IsDisposed)
+                {
+
+                    if (News == default || Slide + 1 > News.Length)
+                    {
+                        Slide = 0;
+
+                    }
+                    else
+                    {
+                        Slide += 1;
+                    }
+
+                    try
+                    {
+                        CurrentNews = News[Slide];
+                    }
+                    catch (Exception) {}
+                    await Task.Delay(5000);
+                }
+            });
         }
 
 

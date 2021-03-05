@@ -54,6 +54,23 @@ namespace Wabbajack.Views
                 this.WhenAny(x => x.ViewModel.ChangelogCommand)
                     .BindToStrict(this, x => x.ChangelogButton.Command)
                     .DisposeWith(dispose);
+
+                this.WhenAny(x => x.ViewModel.CurrentNews)
+                    .Select(x => x?.Text ?? "")
+                    .BindToStrict(this, x => x.DetailImage.Description)
+                    .DisposeWith(dispose);
+                
+                this.WhenAny(x => x.ViewModel.CurrentNews)
+                    .Select(x => x?.Text ?? "")
+                    .BindToStrict(this, x => x.DetailImage.Description)
+                    .DisposeWith(dispose);
+                
+                this.WhenAny(x => x.ViewModel.CurrentNews)
+                    .Select(x => x?.Image?.ToString() ?? "")
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .DownloadBitmapImage(_ => {})
+                    .BindToStrict(this, x => x.DetailImage.Image)
+                    .DisposeWith(dispose);
             });
         }
     }

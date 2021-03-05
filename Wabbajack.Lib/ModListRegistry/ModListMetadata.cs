@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Wabbajack.Common;
 using Wabbajack.Common.Serialization.Json;
+using Wabbajack.Lib.Http;
 using Game = Wabbajack.Common.Game;
 
 namespace Wabbajack.Lib.ModListRegistry
@@ -179,6 +180,13 @@ namespace Wabbajack.Lib.ModListRegistry
         
         [JsonProperty("image")]
         public Uri? Image { get; set; }
+
+        public static async Task<NewsItem[]> LoadNews(string uri)
+        {
+            var client = new Client();
+            return (await client.GetStringAsync(uri)).FromJsonString<NewsItem[]>();
+
+        }
     }
 
 }
