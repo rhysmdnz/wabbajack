@@ -1,0 +1,165 @@
+<UserControl x:Class="Wabbajack.App.Controls.GlowingIconButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:local="clr-namespace:Wabbajack.App.Controls"
+             mc:Ignorable="d"
+             x:Name="_this"
+             d:DesignHeight="300" d:DesignWidth="300">
+
+        <Button Margin="15,0"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                ClipToBounds="False"
+                x:Name="WrapperButton"
+                >
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+                <Grid ClipToBounds="False">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Viewbox Grid.Row="1">
+                        <Grid>
+                            <Grid>
+                                <icon:PackIconFontAwesome
+                                    Width="140"
+                                    Height="140"
+                                    Margin="0,0,0,10"
+                                    HorizontalAlignment="Center"
+                                    ClipToBounds="False"
+                                    Foreground="{StaticResource PrimaryVariantBrush}"
+                                    x:Name="IconBase"
+                                    Opacity="0.6" />
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+                                        <Setter Property="Effect">
+                                            <Setter.Value>
+                                                <BlurEffect Radius="50" />
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" Value="True">
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <BlurEffect Radius="75" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+                            </Grid>
+                            <Grid>
+                                <icon:PackIconFontAwesome
+                                    Width="140"
+                                    Height="140"
+                                    Margin="0,0,0,10"
+                                    HorizontalAlignment="Center"
+                                    ClipToBounds="False"
+                                    Foreground="{StaticResource SecondaryBrush}"
+                                    x:Name="IconGlow2" />
+                                <Grid.Effect>
+                                    <BlurEffect Radius="25" />
+                                </Grid.Effect>
+                                <Grid.Resources>
+                                    <Style TargetType="Grid">
+                                        <Setter Property="Opacity" Value="0" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" Value="True">
+                                                <DataTrigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                                Storyboard.TargetProperty="Opacity"
+                                                                To="0.6"
+                                                                Duration="0:0:0.0" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.EnterActions>
+                                                <DataTrigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                                Storyboard.TargetProperty="Opacity"
+                                                                To="0"
+                                                                Duration="0:0:4.0" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.ExitActions>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Resources>
+                            </Grid>
+                            <icon:PackIconFontAwesome
+                                Width="140"
+                                Height="140"
+                                Margin="0,0,0,10"
+                                HorizontalAlignment="Center"
+                                x:Name="IconGlow">
+                                <icon:PackIconFontAwesome.Style>
+                                    <Style TargetType="icon:PackIconFontAwesome">
+                                        <Setter Property="Foreground" Value="{StaticResource DimForegroundBrush}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" Value="True">
+                                                <DataTrigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <ColorAnimation
+                                                                Storyboard.TargetProperty="(icon:PackIconFontAwesome.Foreground).(SolidColorBrush.Color)"
+                                                                To="{StaticResource ForegroundColor}"
+                                                                Duration="0:0:0.0" />
+                                                            <ColorAnimation
+                                                                Storyboard.TargetProperty="(icon:PackIconFontAwesome.Foreground).(SolidColorBrush.Color)"
+                                                                To="{StaticResource LightSecondary}"
+                                                                Duration="0:0:2.0" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.EnterActions>
+                                                <DataTrigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <ColorAnimation
+                                                                Storyboard.TargetProperty="(icon:PackIconFontAwesome.Foreground).(SolidColorBrush.Color)"
+                                                                To="{StaticResource DimForegroundColor}"
+                                                                Duration="0:0:4.0" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.ExitActions>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </icon:PackIconFontAwesome.Style>
+                            </icon:PackIconFontAwesome>
+                        </Grid>
+                    </Viewbox>
+                    <TextBlock Grid.Row="2"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        FontSize="25"
+                        Name="TextBlock">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Opacity" Value="0.2" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" Value="True">
+                                        <Setter Property="Opacity" Value="1" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </Button>
+
+</UserControl>
