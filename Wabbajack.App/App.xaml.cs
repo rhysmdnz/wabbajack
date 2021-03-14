@@ -42,5 +42,10 @@ namespace Wabbajack.App
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow!.Show();
         }
+        
+        public static T GetService<T>() where T : notnull
+        {
+            return ((App)Current).ServiceProvider.GetRequiredService<T>();
+        }
     }
 }

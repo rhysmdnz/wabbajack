@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Windows;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Wabbajack.Common;
 
@@ -19,6 +21,5 @@ namespace Wabbajack.App.Services
             
             Utils.Log($"Wabbajack Version: {Version}");
         }
-        
     }
 }

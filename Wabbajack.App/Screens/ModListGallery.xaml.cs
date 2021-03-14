@@ -4,8 +4,10 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Controls;
 using DynamicData;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using Wabbajack.App.Controls;
+using Wabbajack.App.Services;
 
 namespace Wabbajack.App.Screens
 {
@@ -32,11 +34,12 @@ namespace Wabbajack.App.Screens
 
                 this.WhenAny(x => x.ViewModel!.ModLists)
 
-                    .Select(lists => lists.Select(list => 
-                    new GalleryItemVM
+                    .Select(lists => lists.Select(list =>
                     {
-                        Title = list.Title,
-                        ImageUrl = list.Links.ImageUri
+                        var vm = App.GetService<GalleryItemVM>();
+                        vm.Title = list.Title;
+                        vm.ImageUrl = list.Links.ImageUri;
+                        return vm;
                     }).ToArray())
                     .BindToStrict(this, x => x.Gallery.Items)
                     .DisposeWith(dispose);
