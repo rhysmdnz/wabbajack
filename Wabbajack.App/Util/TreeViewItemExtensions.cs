@@ -5,14 +5,14 @@ namespace DarkBlendTheme
 {
     public static class TreeViewItemExtensions
     {
-        public static int GetDepth(this TreeViewItem item)
+        public static int GetDepth(this TreeViewItem? item)
         {
-            TreeViewItem parent;
+            TreeViewItem? parent;
             while ((parent = GetParent(item)) != null) return GetDepth(parent) + 1;
             return 0;
         }
 
-        private static TreeViewItem GetParent(TreeViewItem item)
+        private static TreeViewItem? GetParent(TreeViewItem? item)
         {
             var parent = VisualTreeHelper.GetParent(item);
 

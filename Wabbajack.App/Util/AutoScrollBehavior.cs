@@ -55,12 +55,12 @@ namespace Wabbajack
             }
         }
 
-        private static void ListBox_ItemsSourceChanged(object sender, EventArgs e)
+        private static void ListBox_ItemsSourceChanged(object? sender, EventArgs e)
         {
-            var listBox = (ListBox)sender;
-            if (Associations.ContainsKey(listBox))
-                Associations[listBox].Dispose();
-            Associations[listBox] = new Capture(listBox);
+            var listBox = (ListBox?)sender;
+            if (Associations.ContainsKey(listBox!))
+                Associations[listBox!].Dispose();
+            Associations[listBox!] = new Capture(listBox!);
         }
 
         private static void ListBox_Unloaded(object sender, RoutedEventArgs e)
@@ -82,13 +82,13 @@ namespace Wabbajack
 
         private class Capture : IDisposable
         {
-            private readonly INotifyCollectionChanged _incc;
+            private readonly INotifyCollectionChanged? _incc;
             private readonly ListBox _listBox;
 
             public Capture(ListBox listBox)
             {
                 this._listBox = listBox;
-                _incc = listBox.ItemsSource as INotifyCollectionChanged;
+                _incc = listBox!.ItemsSource as INotifyCollectionChanged;
                 if (_incc != null) _incc.CollectionChanged += incc_CollectionChanged;
             }
 
@@ -98,13 +98,13 @@ namespace Wabbajack
                     _incc.CollectionChanged -= incc_CollectionChanged;
             }
 
-            private void incc_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+            private void incc_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
             {
                 if (e.Action == NotifyCollectionChangedAction.Add)
                 {
                     try
                     {
-                        _listBox.ScrollIntoView(e.NewItems[0]);
+                        _listBox.ScrollIntoView(e.NewItems![0]!);
                         _listBox.SelectedItem = e.NewItems[0];
                     }
                     catch (ArgumentOutOfRangeException) { }

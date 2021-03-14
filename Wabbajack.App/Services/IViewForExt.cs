@@ -40,7 +40,7 @@ namespace Wabbajack
                 selector: selector);
         }
 
-        public static IReactiveBinding<TView, (object view, bool isViewModel)> BindStrict<TViewModel, TView, TProp>(
+        public static IReactiveBinding<TView, (object? view, bool isViewModel)> BindStrict<TViewModel, TView, TProp>(
             this TView view,
             TViewModel viewModel,
             Expression<Func<TViewModel, TProp>> vmProperty,
@@ -54,7 +54,7 @@ namespace Wabbajack
                 viewProperty: viewProperty);
         }
 
-        public static IReactiveBinding<TView, (object view, bool isViewModel)> BindStrict<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public static IReactiveBinding<TView, (object? view, bool isViewModel)> BindStrict<TViewModel, TView, TVMProp, TVProp, TDontCare>(
             this TView view,
             TViewModel viewModel,
             Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -74,7 +74,7 @@ namespace Wabbajack
                 viewToVmConverter: viewToVmConverter);
         }
 
-        public static IReactiveBinding<TView, (object view, bool isViewModel)> BindStrict<TViewModel, TView, TVMProp, TVProp>(
+        public static IReactiveBinding<TView, (object? view, bool isViewModel)> BindStrict<TViewModel, TView, TVMProp, TVProp>(
             this TView view,
             TViewModel viewModel,
             Expression<Func<TViewModel, TVMProp>> vmProperty,

@@ -44,10 +44,9 @@
             <controls:GlowingIconButton x:Name="InstallFromDiskButton" Grid.Row="1" Grid.Column="1" Text="Install From Disk" Icon="HddSolid" /> 
             <controls:GlowingIconButton x:Name="CompileButton" Grid.Row="1" Grid.Column="2" Text="Create a ModList" Icon="PlusCircleSolid" /> 
         </Grid>
-        <!--
-        <local:LinksView Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
-            Margin="10"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top" /> -->
+        <controls:LinksView Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
+                         Margin="10"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Top" />
     </Grid>
 </local:ScreenBase>

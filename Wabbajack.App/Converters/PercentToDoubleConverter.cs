@@ -20,7 +20,7 @@ namespace Wabbajack
             return 0;
         }
 
-        public bool TryConvert(object from, Type toType, object conversionHint, out object result)
+        public bool TryConvert(object? from, Type toType, object? conversionHint, out object? result)
         {
             if (toType == typeof(double))
             {
