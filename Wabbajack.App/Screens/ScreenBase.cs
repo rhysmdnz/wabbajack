@@ -6,7 +6,7 @@ namespace Wabbajack.App.Screens
     {
         protected ScreenBase(T vm)
         {
-            DataContext = vm;
+            ViewModel = vm;
         }
         
     }

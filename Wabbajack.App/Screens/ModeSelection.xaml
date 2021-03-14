@@ -37,12 +37,14 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />                
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <controls:GlowingIconButton x:Name="BrowseButton" Grid.Row="1" Grid.Column="0" Text="Browse Modlists" Icon="CloudDownloadAltSolid" /> 
             <controls:GlowingIconButton x:Name="InstallFromDiskButton" Grid.Row="1" Grid.Column="1" Text="Install From Disk" Icon="HddSolid" /> 
             <controls:GlowingIconButton x:Name="CompileButton" Grid.Row="1" Grid.Column="2" Text="Create a ModList" Icon="PlusCircleSolid" /> 
+            <controls:GlowingIconButton x:Name="PlayButton" Grid.Row="1" Grid.Column="3" Text="Play a ModList" Icon="PlaySolid" /> 
         </Grid>
         <controls:LinksView Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
                          Margin="10"

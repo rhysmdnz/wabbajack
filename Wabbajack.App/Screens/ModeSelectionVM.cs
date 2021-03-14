@@ -1,18 +1,24 @@
 ﻿using System.Reactive;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
+using Wabbajack.App.Services;
 using Wabbajack.Lib;
 
 namespace Wabbajack.App.Screens
 {
     public class ModeSelectionVM : ViewModel
     {
-        public ReactiveCommand<Unit, Unit> BrowseModListsCommand;
+        [Reactive]
+        public ReactiveCommand<Unit, Unit> BrowseButtonCommand { get; private set; }
+        
+        private EventRouter _router;
 
-        public ModeSelectionVM()
+        public ModeSelectionVM(EventRouter router)
         {
-            BrowseModListsCommand = ReactiveCommand.Create(() =>
+            _router = router;
+            BrowseButtonCommand = ReactiveCommand.Create(() =>
             {
-
+                _router.NavigateTo<ModListGallery>();
             });
         }
 

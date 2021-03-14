@@ -13,8 +13,7 @@
                 Background="Transparent"
                 BorderBrush="Transparent"
                 ClipToBounds="False"
-                x:Name="WrapperButton"
-                >
+                x:Name="WrapperButton">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}">
@@ -161,5 +160,4 @@
                     </TextBlock>
                 </Grid>
             </Button>
-
 </UserControl>
