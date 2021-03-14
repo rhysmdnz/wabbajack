@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net5.0-windows</TargetFramework>
+        <UseWPF>true</UseWPF>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="MahApps.Metro.IconPacks.FontAwesome, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0c0d510f9915137a">
+        <HintPath>..\..\..\Users\tbald\.nuget\packages\mahapps.metro.iconpacks\4.8.0\lib\netcoreapp3.1\MahApps.Metro.IconPacks.FontAwesome.dll</HintPath>
+      </Reference>
+      <Reference Include="Microsoft.Extensions.DependencyInjection, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+        <HintPath>..\..\..\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\5.0.0\ref\net5.0\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+      </Reference>
+      <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+        <HintPath>..\..\..\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\5.0.0\ref\net5.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MahApps.Metro" Version="2.4.4" />
+      <PackageReference Include="MahApps.Metro.IconPacks" Version="4.8.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+      <PackageReference Include="ReactiveUI" Version="13.2.2" />
+      <PackageReference Include="ReactiveUI.Fody" Version="13.2.2" />
+      <PackageReference Include="ReactiveUI.WPF" Version="13.2.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Wabbajack.Lib\Wabbajack.Lib.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="Resources\middle_mouse_button.png" />
+      <Resource Include="Resources\MO2Button.png" />
+      <Resource Include="Resources\VortexButton.png" />
+      <Resource Include="Resources\Wabba_Ded.png" />
+      <Resource Include="Resources\Wabba_Mouth.png" />
+      <Resource Include="Resources\Wabba_Mouth_No_Text.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <SplashScreen Include="Resources\Wabba_Mouth_Small.png" />
+    </ItemGroup>
+
+</Project>

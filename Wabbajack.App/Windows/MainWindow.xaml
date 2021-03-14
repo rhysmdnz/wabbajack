@@ -1,0 +1,45 @@
+﻿<mahapps:MetroWindow x:Class="Wabbajack.App.MainWindow"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:local="clr-namespace:Wabbajack.App"
+                     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                     mc:Ignorable="d"
+                     Title="Wabbajack"
+                     Width="1280"
+                     Height="960"
+                     MinWidth="850"
+                     MinHeight="650"
+                     RenderOptions.BitmapScalingMode="HighQuality"
+                     ResizeMode="CanResize"
+                     Style="{StaticResource {x:Type Window}}"
+                     TitleBarHeight="25"
+                     UseLayoutRounding="True"
+                     WindowTitleBrush="{StaticResource MahApps.Brushes.Accent}">
+    <Grid>
+        <ContentPresenter Name="Content">
+        </ContentPresenter>
+    </Grid>
+    <mahapps:MetroWindow.RightWindowCommands>
+        <mahapps:WindowCommands>
+            <mahapps:WindowCommands.Resources>
+                <Style BasedOn="{StaticResource IconBareButtonStyle}" TargetType="Button" />
+            </mahapps:WindowCommands.Resources>
+            <Button Margin="5,0" x:Name = "VersionButton">
+                <Button.ToolTip>
+                    <ToolTip Content="Wabbajack Version&#x0a;Click to copy to clipboard"/>
+                </Button.ToolTip>
+            </Button>
+            <Button Grid.Column="1"
+                    Margin="5,0"
+                    x:Name = "SettingsButton">
+                <iconPacks:PackIconMaterial
+                    Width="17"
+                    Height="17"
+                    Kind="Cog" />
+            </Button>
+        </mahapps:WindowCommands>
+    </mahapps:MetroWindow.RightWindowCommands>
+</mahapps:MetroWindow>

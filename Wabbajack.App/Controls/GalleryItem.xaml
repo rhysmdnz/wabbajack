@@ -82,7 +82,7 @@
                 BorderBrush="{StaticResource ButtonNormalBorder}"
                 BorderThickness="0,0,0,1">
                 <Grid ClipToBounds="True">
-                    <!--<mah:ProgressRing x:Name="ImageLoadingSpinner" /> -->
+                    <mah:ProgressRing x:Name="ImageLoadingSpinner" />
                     <Viewbox
                         Height="340"
                         HorizontalAlignment="Center"
