@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -12,6 +13,7 @@ using OMODFramework;
 using ReactiveUI;
 using Wabbajack.App.Controls;
 using Wabbajack.App.Services;
+using Wabbajack.Common;
 using Wabbajack.Lib.ModListRegistry;
 
 namespace Wabbajack.App.Screens
@@ -46,16 +48,32 @@ namespace Wabbajack.App.Screens
                     .Select(x => x ?? false)
                     .BindToStrict(this.ViewModel!, x => x.ShowNSFW)
                     .DisposeWith(dispose);
-                
+
                 this.WhenAny(x => x.ViewModel!.ModListVMs)
                     .BindToStrict(this, x => x.Gallery.Items)
                     .DisposeWith(dispose);
 
+
+                var allItm = new ComboBoxItem() {Content = "All Games"};
+                allItm.WhenAny(x => x.IsSelected)
+                    .Where(x => x)
+                    .Select(_ => (Game?)null)
+                    .BindToStrict(this.ViewModel!, x => x!.GameFilter)
+                    .DisposeWith(dispose);
+                GameSelectorComboBox.Items.Add(allItm);
+                
+                foreach (var game in GameRegistry.Games.Values.OrderBy(x => x.HumanFriendlyGameName))
+                {
+                    var itm = new ComboBoxItem() {Content = game.HumanFriendlyGameName};
+                    itm.WhenAny(x => x.IsSelected)
+                        .Where(x => x)
+                        .Select(_ => (Game?)game.Game)
+                        .BindToStrict(this.ViewModel!, x => x!.GameFilter)
+                        .DisposeWith(dispose);
+                    GameSelectorComboBox.Items.Add(itm);
+                }
             });
-
         }
-
-
     }
 }
 

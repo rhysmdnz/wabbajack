@@ -24,7 +24,7 @@ namespace Wabbajack.App.Screens
         private DownloadedModlistManager _downloadManager;
         
         [Reactive]
-        public bool ShowNSFW { get; set; };
+        public bool ShowNSFW { get; set; }
 
         [Reactive] 
         public ModlistMetadata[] ModLists { get; set; } = Array.Empty<ModlistMetadata>();
@@ -35,15 +35,21 @@ namespace Wabbajack.App.Screens
 
         [Reactive] public string SearchString { get; set; } = "";
 
+        [Reactive] public Game? GameFilter { get; set; } = null;
+
         public ModListGalleryVM(DownloadedModlistManager downloadManager)
         {
             _downloadManager = downloadManager;
             var tsk = ReloadLists();
 
             var searchFilter = this.WhenAny(x => x.SearchString)
-                .CombineLatest(this.WhenAny(x => x.ShowNSFW))
-                .Select<string, Func<ModlistMetadata, bool>>(str =>
-                    vm => string.IsNullOrEmpty(str) || vm.Title.Contains(str, StringComparison.InvariantCultureIgnoreCase));
+                .CombineLatest(this.WhenAny(x => x.ShowNSFW), 
+                    this.WhenAny(x => x.GameFilter))
+                .Select< (string SearchString, bool ShowNSFW, Game? Game), Func<ModlistMetadata, bool>>(
+                    d =>
+                      vm => (string.IsNullOrEmpty(d.SearchString) || vm.Title.Contains(d.SearchString, StringComparison.InvariantCultureIgnoreCase))
+                    && ((vm.NSFW && d.ShowNSFW) || !vm.NSFW)
+                    && ((d.Game != null && vm.Game == d.Game) || d.Game == null));
             
             this.WhenAny(x => x.ModLists)
                 .SelectMany(lists => lists)
