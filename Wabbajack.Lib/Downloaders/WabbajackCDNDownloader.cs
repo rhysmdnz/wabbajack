@@ -86,7 +86,7 @@ namespace Wabbajack.Lib.Downloaders
                 if (!DomainRemaps.ContainsKey(Url.Host)) 
                     client.Headers.Add(("Host", Url.Host));
 
-                using var status = new StatusTracker(StatusCategory.Network, definition.Size, $"Downloading {a.Name}");
+                using var status = new StatusTracker(StatusCategory.Network | StatusCategory.Disk, definition.Size, $"Downloading {a.Name}");
                 using var queue = new WorkQueue();
                 await definition.Parts.PMap(queue, async part =>
                 {

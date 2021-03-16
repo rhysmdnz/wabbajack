@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -9,6 +10,7 @@ using DynamicData.Binding;
 
 namespace Wabbajack.Common
 {
+    [Flags]
     public enum StatusCategory
     {
         Disk,
@@ -22,13 +24,21 @@ namespace Wabbajack.Common
         public static IObservable<StatusMessage> Updates => _updates;
         private static Subject<StatusMessage> _updates = new();
         public static ObservableCollectionExtended<StatusMessage> StatusMessages { get; } = new();
+        public static IObservable<StatusMessage> OverallMessage { get; }
 
         static  StatusUtils()
         {
-            Updates.ToObservableChangeSet(x => x.Id)
+            var expiry = TimeSpan.FromSeconds(10);
+            Updates.ToObservableChangeSet(x => x.Id, x => expiry)
+                .Batch(TimeSpan.FromMilliseconds(50))
+                .Filter(x => x.Category != StatusCategory.Finished)
                 .Sort(SortExpressionComparer<StatusMessage>.Ascending(x => x.Id))
                 .Bind(StatusMessages)
                 .Subscribe();
+            
+            OverallMessage = StatusMessages.ToObservableChangeSet()
+                .ToCollection()
+                .Select(c => c.FirstOrDefault());
         }
 
 
@@ -68,7 +78,7 @@ namespace Wabbajack.Common
         private long _processed = 0;
         private DateTime _lastUpdate;
         private long _oldProcessed;
-        private static TimeSpan _oneSecond = TimeSpan.FromSeconds(1);
+        private static TimeSpan _updateSpan = TimeSpan.FromMilliseconds(250);
         private long _bytesPerSecond;
 
         public StatusTracker(StatusCategory category, long maxBytes, string message)
@@ -80,6 +90,7 @@ namespace Wabbajack.Common
             _processed = 0;
             _lastUpdate = DateTime.Now;
             _oldProcessed = 0;
+            Update(0);
         }
 
         public void Update(long processed)
@@ -89,9 +100,10 @@ namespace Wabbajack.Common
                 _processed += processed;
 
                 var now = DateTime.Now;
-                if (DateTime.Now - now >= _oneSecond)
+                if (now - _lastUpdate >= _updateSpan)
                 {
                     _bytesPerSecond = _processed - _oldProcessed;
+                    _oldProcessed = _processed;
                     _lastUpdate = now;
                 }
                 

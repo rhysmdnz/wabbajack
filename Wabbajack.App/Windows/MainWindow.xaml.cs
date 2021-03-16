@@ -58,7 +58,57 @@ namespace Wabbajack.App
                 StatusUtils.StatusMessages.ToObservableChangeSet().ToCollection()
                     .Select(x => new Percent(x.Average(y => y.Percent.Value)))
                     .Select(x => x.Value)
+                    .ObserveOnGuiThread()
                     .BindToStrict(this, x => x.TaskbarInfo.ProgressValue)
+                    .DisposeWith(dispose);
+                
+                StatusUtils.StatusMessages.ToObservableChangeSet()
+                    .ToCollection()
+                    .Select(t => t.Count > 0 ? Visibility.Visible : Visibility.Collapsed)
+                    .ObserveOnGuiThread()
+                    .BindToStrict(this, x => x.StatusHeader.Visibility)
+                    .DisposeWith(dispose);
+
+                StatusUtils.OverallMessage
+                    .Select(s => s.Percent.Value)
+                    .ObserveOnGuiThread()
+                    .BindToStrict(this, x => x.OverAllProgress.Value)
+                    .DisposeWith(dispose);
+
+                StatusUtils.StatusMessages.ToObservableChangeSet()
+                    .ToCollection()
+                    .Select(x => x.Where(x => x.Category.HasFlag(StatusCategory.Compute))
+                        .Sum(x => x.BytesPerSecond))
+                    .Select(x => x > 0 ? $"CPU: {x.ToFileSizeString()}/sec" : "CPU: Idle")
+                    .ObserveOnGuiThread()
+                    .Select(x => x)
+                    .BindToStrict(this, x => x.CPUStatus.Text)
+                    .DisposeWith(dispose);
+                
+                StatusUtils.StatusMessages.ToObservableChangeSet()
+                    .ToCollection()
+                    .Select(x => x.Where(x => x.Category.HasFlag(StatusCategory.Network))
+                        .Sum(x => x.BytesPerSecond))
+                    .Select(x => x > 0 ? $"Network: {x.ToFileSizeString()}/sec" : "Network: Idle")
+                    .ObserveOnGuiThread()
+                    .Select(x => x)
+                    .BindToStrict(this, x => x.NetworkStatus.Text)
+                    .DisposeWith(dispose);
+                
+                StatusUtils.StatusMessages.ToObservableChangeSet()
+                    .ToCollection()
+                    .Select(x => x.Where(x => x.Category.HasFlag(StatusCategory.Disk))
+                        .Sum(x => x.BytesPerSecond))
+                    .Select(x => x > 0 ? $"Disk: {x.ToFileSizeString()}/sec" : "Disk: Idle")
+                    .ObserveOnGuiThread()
+                    .Select(x => x)
+                    .BindToStrict(this, x => x.DiskStatus.Text)
+                    .DisposeWith(dispose);
+
+                StatusUtils.OverallMessage
+                    .Select(i => string.IsNullOrWhiteSpace(i.Message) ? $"Task: None" : $"{i.Message} - {i.Percent}")
+                    .ObserveOnGuiThread()
+                    .BindToStrict(this, x => x.OverAllAction.Text)
                     .DisposeWith(dispose);
 
                 TaskbarInfo.ProgressState = TaskbarItemProgressState.Normal;
