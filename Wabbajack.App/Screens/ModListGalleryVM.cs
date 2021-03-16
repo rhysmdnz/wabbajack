@@ -36,6 +36,8 @@ namespace Wabbajack.App.Screens
         [Reactive] public string SearchString { get; set; } = "";
 
         [Reactive] public Game? GameFilter { get; set; } = null;
+        [Reactive] public bool OnlyInstalled { get; set; }
+        [Reactive] public bool OnlyUtilityLists { get; set; }
 
         public ModListGalleryVM(DownloadedModlistManager downloadManager)
         {
@@ -44,12 +46,16 @@ namespace Wabbajack.App.Screens
 
             var searchFilter = this.WhenAny(x => x.SearchString)
                 .CombineLatest(this.WhenAny(x => x.ShowNSFW), 
-                    this.WhenAny(x => x.GameFilter))
-                .Select< (string SearchString, bool ShowNSFW, Game? Game), Func<ModlistMetadata, bool>>(
+                    this.WhenAny(x => x.GameFilter),
+                    this.WhenAny( x => x.OnlyInstalled),
+                    this.WhenAny( x => x.OnlyUtilityLists))
+                .Select< (string SearchString, bool ShowNSFW, Game? Game, bool OnlyInstalled, bool OnlyUtilityLists), Func<ModlistMetadata, bool>>(
                     d =>
                       vm => (string.IsNullOrEmpty(d.SearchString) || vm.Title.Contains(d.SearchString, StringComparison.InvariantCultureIgnoreCase))
                     && ((vm.NSFW && d.ShowNSFW) || !vm.NSFW)
-                    && ((d.Game != null && vm.Game == d.Game) || d.Game == null));
+                    && ((d.Game != null && vm.Game == d.Game) || d.Game == null)
+                    && ((!d.OnlyInstalled || d.OnlyInstalled && vm.Game.MetaData().IsInstalled))
+                    && ((!d.OnlyUtilityLists && !vm.UtilityList || d.OnlyUtilityLists && vm.UtilityList)));
             
             this.WhenAny(x => x.ModLists)
                 .SelectMany(lists => lists)

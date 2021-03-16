@@ -53,6 +53,16 @@ namespace Wabbajack.App.Screens
                     .BindToStrict(this, x => x.Gallery.Items)
                     .DisposeWith(dispose);
 
+                this.WhenAny(x => x.OnlyInstalledCheckbox.IsChecked)
+                    .Select(x => x!)
+                    .BindToStrict(this.ViewModel!, x => x.OnlyInstalled)
+                    .DisposeWith(dispose);
+                
+                this.WhenAny(x => x.OnlyUtilityLists.IsChecked)
+                    .Select(x => x!)
+                    .BindToStrict(this.ViewModel!, x => x.OnlyUtilityLists)
+                    .DisposeWith(dispose);
+
 
                 var allItm = new ComboBoxItem() {Content = "All Games"};
                 allItm.WhenAny(x => x.IsSelected)
