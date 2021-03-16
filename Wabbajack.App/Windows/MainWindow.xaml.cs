@@ -15,9 +15,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Shell;
+using DynamicData;
+using DynamicData.Binding;
 using MahApps.Metro.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
+using Wabbajack.Common;
 
 namespace Wabbajack.App
 {
@@ -35,7 +39,7 @@ namespace Wabbajack.App
                 var vm = ((App)Application.Current).ServiceProvider.GetService<MainWindowVM>()!;
                 vm.WhenAny(x => x.CurrentScreen)
                     .Select(x => (ContentControl)x)
-                    .BindToStrict(this, x => x.Content.Content)
+                    .BindToStrict(this, x => x.WindowContent.Content)
                     .DisposeWith(dispose);
 
                 vm.WhenAny(x => x.VersionString)
@@ -50,6 +54,14 @@ namespace Wabbajack.App
                     }))
                     .BindToStrict(this, x => x.VersionButton.Command)
                     .DisposeWith(dispose);
+
+                StatusUtils.StatusMessages.ToObservableChangeSet().ToCollection()
+                    .Select(x => new Percent(x.Average(y => y.Percent.Value)))
+                    .Select(x => x.Value)
+                    .BindToStrict(this, x => x.TaskbarInfo.ProgressValue)
+                    .DisposeWith(dispose);
+
+                TaskbarInfo.ProgressState = TaskbarItemProgressState.Normal;
             });
 
         }

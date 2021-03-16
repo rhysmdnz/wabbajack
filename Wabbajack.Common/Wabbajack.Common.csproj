@@ -48,6 +48,7 @@
         <Folder Include="Properties\" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="DynamicData" Version="7.1.1" />
         <PackageReference Include="Genbox.AlphaFS" Version="2.2.2.1" />
         <PackageReference Include="HtmlAgilityPack" Version="1.11.31" />
         <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />

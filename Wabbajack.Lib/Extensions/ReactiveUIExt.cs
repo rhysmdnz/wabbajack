@@ -84,7 +84,7 @@ namespace Wabbajack
         }
 
         /// <summary>
-        /// Removes outdated key events from a changeset, only leaving the last relevent change for each key.
+        /// Removes outdated key events from a changeset, only leavingb the last relevent change for each key.
         /// </summary>
         public static IChangeSet<TObject, TKey> EnsureUniqueChanges<TObject, TKey>(this IChangeSet<TObject, TKey> input)
             where TKey : notnull

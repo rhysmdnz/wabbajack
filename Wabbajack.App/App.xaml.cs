@@ -35,6 +35,7 @@ namespace Wabbajack.App
             services.AddSingleton<GlobalInformation>();
             services.AddSingleton<Settings>();
             services.AddSingleton<EventRouter>();
+            services.AddSingleton<DownloadedModlistManager>();
         }
 
         private void OnStartup(object sender, StartupEventArgs e)

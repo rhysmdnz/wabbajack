@@ -85,7 +85,8 @@ namespace Wabbajack.Lib.Downloaders
                 
                 if (!DomainRemaps.ContainsKey(Url.Host)) 
                     client.Headers.Add(("Host", Url.Host));
-                
+
+                using var status = new StatusTracker(StatusCategory.Network, definition.Size, $"Downloading {a.Name}");
                 using var queue = new WorkQueue();
                 await definition.Parts.PMap(queue, async part =>
                 {
@@ -98,16 +99,16 @@ namespace Wabbajack.Lib.Downloaders
                         using var response = await GetWithCDNRetry(client, $"{builder}/parts/{part.Index}");
                         if (!response.IsSuccessStatusCode)
                             throw new HttpException((int)response.StatusCode, response.ReasonPhrase ?? "Unknown");
-                        await response.Content.CopyToAsync(ostream);
-                        
+                        await using var stream = await response.Content.ReadAsStreamAsync();
+                        await stream.CopyToLimitAsync(ostream, part.Size, status);
                     }
                     else
                     {
                         using var response = await GetWithMirroredRetry(client, $"{Url}/parts/{part.Index}");
                         if (!response.IsSuccessStatusCode)
                             throw new HttpException((int)response.StatusCode, response.ReasonPhrase ?? "Unknown");
-                        await response.Content.CopyToAsync(ostream);
-
+                        await using var stream = await response.Content.ReadAsStreamAsync();
+                        await stream.CopyToLimitAsync(ostream, part.Size, status);
                     }
 
                 });

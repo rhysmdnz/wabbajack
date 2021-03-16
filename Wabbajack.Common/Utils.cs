@@ -869,22 +869,23 @@ namespace Wabbajack.Common
             return path.ToLower().TrimEnd('\\').StartsWith(parent.ToLower().TrimEnd('\\') + "\\", StringComparison.OrdinalIgnoreCase);
         }
         
-        public static async Task CopyToLimitAsync(this Stream frm, Stream tw, long limit)
+        public static async Task CopyToLimitAsync(this Stream frm, Stream tw, long limit, StatusTracker? tracker = null)
         {
             var buff = new byte[1024];
-            var initalLimit = limit;
             while (limit > 0)
             {
-                var to_read = Math.Min(buff.Length, limit);
-                var read = await frm.ReadAsync(buff, 0, (int)to_read);
+                var toRead = Math.Min(buff.Length, limit);
+                var read = await frm.ReadAsync(buff.AsMemory(0, (int)toRead));
                 if (read == 0)
                     throw new Exception("End of stream before end of limit");
-                await tw.WriteAsync(buff, 0, read);
+                await tw.WriteAsync(buff.AsMemory(0, read));
+                tracker?.Update(read);
                 limit -= read;
             }
 
-            tw.Flush();
+            await tw.FlushAsync();
         }
+        
 
         public class NexusErrorResponse
         {

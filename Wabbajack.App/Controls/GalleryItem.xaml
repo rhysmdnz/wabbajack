@@ -266,80 +266,29 @@
                 Maximum="1"
                 Visibility="{Binding IsEnabled, ElementName=ExecuteButton, Converter={StaticResource bool2VisibilityHiddenConverter}, ConverterParameter=False}" />
             <TextBlock Grid.Row="1" Grid.Column="0"
-                x:Name="MetadataDescription"
+                x:Name="DescriptionText"
                 Margin="8,5"
                 VerticalAlignment="Center"
                 FontSize="14"
                 TextWrapping="Wrap" />
             <Grid Grid.Row="1" Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Button Grid.Row="0"
-                    x:Name="OpenWebsiteButton"
-                    Width="40"
-                    Height="40"
-                    Margin="5,0"
-                    VerticalAlignment="Bottom"
-                    Style="{StaticResource IconBareButtonStyle}">
-                    <iconPacks:Material
-                        Width="20"
-                        Height="20"
-                        Kind="Web" />
-                </Button>
-                <Button Grid.Row="1"
-                    x:Name="ExecuteButton"
-                    Width="40"
-                    Height="40"
-                    Margin="5,0"
-                    VerticalAlignment="Top">
-                    <Button.Style>
-                        <Style BasedOn="{StaticResource IconBareButtonStyle}" TargetType="Button">
-                            <Setter Property="Content">
-                                <Setter.Value>
-                                    <iconPacks:Material
-                                        Width="20"
-                                        Height="20"
-                                        Kind="Download" />
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="ToolTip" Value="Download modlist" />
-                            <Style.Triggers>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding Exists}" Value="True" />
-                                        <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="True" />
-                                    </MultiDataTrigger.Conditions>
-                                    <MultiDataTrigger.Setters>
-                                        <Setter Property="Content">
-                                            <Setter.Value>
-                                                <iconPacks:Material
-                                                    Width="20"
-                                                    Height="20"
-                                                    Kind="Play" />
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Setter Property="ToolTip" Value="Install modlist" />
-                                        <Setter Property="Padding" Value="3,0,0,0" />
-                                    </MultiDataTrigger.Setters>
-                                </MultiDataTrigger>
-                                <DataTrigger Binding="{Binding Error.Succeeded}" Value="False">
-                                    <Setter Property="Content">
-                                        <Setter.Value>
-                                            <iconPacks:Material
-                                                Width="20"
-                                                Height="20"
-                                                Kind="AlertCircle" />
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Setter Property="ToolTip" Value="Error downloading modlist.  Check logs and/or restart Wabbajack to try again." />
-                                    <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
+                <ItemsControl
+                    x:Name="Commands"
+                    Margin="0,10,10,0"
+                    MaxWidth="60"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <local:GalleryItemCommand MaxWidth="50" MaxHeight="50" Margin="0, 0, 0, 10" ViewModel="{Binding Path=.}"></local:GalleryItemCommand>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </Grid>
         </Grid>
     </Border>

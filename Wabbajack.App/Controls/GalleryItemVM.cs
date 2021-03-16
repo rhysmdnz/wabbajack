@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Windows.Media.Imaging;
 using DynamicData.Alias;
 using ReactiveUI.Fody.Helpers;
 using Wabbajack.Lib;
 using System.Reactive.Linq;
+using MahApps.Metro.IconPacks;
+using ReactiveUI;
+using Wabbajack.Common;
 
 
 namespace Wabbajack.App.Controls
@@ -15,6 +19,10 @@ namespace Wabbajack.App.Controls
 
         [Reactive] public BitmapImage? Image { get; set; } = null;
         [Reactive] public string? ImageUrl { get; set; } = null;
+        [Reactive] public string Description { get; set; } = "";
+
+        [Reactive]
+        public GalleryItemCommandVM[] Commands { get; set; } = Array.Empty<GalleryItemCommandVM>();
 
         public GalleryItemVM()
         {
@@ -25,5 +33,12 @@ namespace Wabbajack.App.Controls
                 .BindToStrict(this, x => x.Image)
                 .DisposeWith(CompositeDisposable);
         }
+    }
+
+    public enum CommandType
+    {
+        Download,
+        Web,
+        Cancel,
     }
 }

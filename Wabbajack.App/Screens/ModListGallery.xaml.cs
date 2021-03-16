@@ -1,13 +1,18 @@
 using System;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Controls;
 using DynamicData;
+using MahApps.Metro.IconPacks;
+using MahApps.Metro.IconPacks.Converter;
 using Microsoft.Extensions.DependencyInjection;
+using OMODFramework;
 using ReactiveUI;
 using Wabbajack.App.Controls;
 using Wabbajack.App.Services;
+using Wabbajack.Lib.ModListRegistry;
 
 namespace Wabbajack.App.Screens
 {
@@ -31,21 +36,16 @@ namespace Wabbajack.App.Screens
                     })
                     .BindToStrict(this, x => x.Gallery.Status)
                     .DisposeWith(dispose);
-
-                this.WhenAny(x => x.ViewModel!.ModLists)
-
-                    .Select(lists => lists.Select(list =>
-                    {
-                        var vm = App.GetService<GalleryItemVM>();
-                        vm.Title = list.Title;
-                        vm.ImageUrl = list.Links.ImageUri;
-                        return vm;
-                    }).ToArray())
+                
+                this.WhenAny(x => x.ViewModel!.ModListVMs)
                     .BindToStrict(this, x => x.Gallery.Items)
                     .DisposeWith(dispose);
 
             });
+
         }
+
+
     }
 }
 

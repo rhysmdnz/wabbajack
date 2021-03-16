@@ -19,7 +19,7 @@
                      UseLayoutRounding="True"
                      WindowTitleBrush="{StaticResource MahApps.Brushes.Accent}">
     <Grid>
-        <ContentPresenter Name="Content">
+        <ContentPresenter Name="WindowContent">
         </ContentPresenter>
     </Grid>
     <mahapps:MetroWindow.RightWindowCommands>
@@ -42,4 +42,9 @@
             </Button>
         </mahapps:WindowCommands>
     </mahapps:MetroWindow.RightWindowCommands>
+    <mahapps:MetroWindow.TaskbarItemInfo>
+        <TaskbarItemInfo x:Name="TaskbarInfo">
+            
+        </TaskbarItemInfo>
+    </mahapps:MetroWindow.TaskbarItemInfo>
 </mahapps:MetroWindow>
