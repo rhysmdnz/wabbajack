@@ -36,6 +36,11 @@ namespace Wabbajack.App.Screens
                     })
                     .BindToStrict(this, x => x.Gallery.Status)
                     .DisposeWith(dispose);
+
+                this.WhenAny(x => x.SearchBox.Text)
+                    .Debounce(TimeSpan.FromMilliseconds(250))
+                    .BindToStrict(this.ViewModel!, x => x.SearchString)
+                    .DisposeWith(dispose);
                 
                 this.WhenAny(x => x.ViewModel!.ModListVMs)
                     .BindToStrict(this, x => x.Gallery.Items)

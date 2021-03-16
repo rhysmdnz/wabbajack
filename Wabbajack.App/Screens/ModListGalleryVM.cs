@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Reactive;
@@ -10,6 +11,9 @@ using Wabbajack.App.Controls;
 using Wabbajack.Lib;
 using Wabbajack.Lib.ModListRegistry;
 using System.Reactive.Linq;
+using DynamicData;
+using DynamicData.Binding;
+using DynamicData.PLinq;
 using Wabbajack.App.Services;
 using Wabbajack.Common;
 
@@ -24,23 +28,34 @@ namespace Wabbajack.App.Screens
 
         [Reactive] public LoadingStatus Status { get; set; } = LoadingStatus.Loading;
 
-        [Reactive] public GalleryItemVM[] ModListVMs { get; set; } = Array.Empty<GalleryItemVM>();
+        [Reactive] public ObservableCollectionExtended<GalleryItemVM> ModListVMs { get; set; } = new();
+
+        [Reactive] public string SearchString { get; set; } = "";
+
         public ModListGalleryVM(DownloadedModlistManager downloadManager)
         {
             _downloadManager = downloadManager;
             var tsk = ReloadLists();
+
+            var searchFilter = this.WhenAny(x => x.SearchString)
+                .Select<string, Func<GalleryItemVM, bool>>(str =>
+                    vm => string.IsNullOrEmpty(str) || vm.Title.Contains(str, StringComparison.InvariantCultureIgnoreCase));
             
             this.WhenAny(x => x.ModLists)
-                .Select(lists => lists.Select(list =>
+                .SelectMany(lists => lists.Select(list =>
                 {
                     var vm = App.GetService<GalleryItemVM>();
+                    vm.Key = list.Links.MachineURL;
                     vm.Title = list.ImageContainsTitle ? "" : list.Title;
                     vm.ImageUrl = list.Links.ImageUri;
                     vm.Description = list.Description;
                     vm.Commands = MakeCommands(list);
                     return vm;
-                }).ToArray())
-                .BindToStrict(this, x => x.ModListVMs)
+                }))
+                .ToObservableChangeSet(x => x.Key)
+                .Filter(searchFilter)
+                .Bind(ModListVMs)
+                .Subscribe()
                 .DisposeWith(CompositeDisposable);
 
         }
