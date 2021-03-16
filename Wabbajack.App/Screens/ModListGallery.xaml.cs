@@ -41,6 +41,11 @@ namespace Wabbajack.App.Screens
                     .Debounce(TimeSpan.FromMilliseconds(250))
                     .BindToStrict(this.ViewModel!, x => x.SearchString)
                     .DisposeWith(dispose);
+
+                this.WhenAny(x => x.ShowNSFW.IsChecked)
+                    .Select(x => x ?? false)
+                    .BindToStrict(this.ViewModel!, x => x.ShowNSFW)
+                    .DisposeWith(dispose);
                 
                 this.WhenAny(x => x.ViewModel!.ModListVMs)
                     .BindToStrict(this, x => x.Gallery.Items)

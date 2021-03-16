@@ -22,6 +22,9 @@ namespace Wabbajack.App.Screens
     public class ModListGalleryVM : ViewModel
     {
         private DownloadedModlistManager _downloadManager;
+        
+        [Reactive]
+        public bool ShowNSFW { get; set; };
 
         [Reactive] 
         public ModlistMetadata[] ModLists { get; set; } = Array.Empty<ModlistMetadata>();
@@ -38,22 +41,23 @@ namespace Wabbajack.App.Screens
             var tsk = ReloadLists();
 
             var searchFilter = this.WhenAny(x => x.SearchString)
-                .Select<string, Func<GalleryItemVM, bool>>(str =>
+                .CombineLatest(this.WhenAny(x => x.ShowNSFW))
+                .Select<string, Func<ModlistMetadata, bool>>(str =>
                     vm => string.IsNullOrEmpty(str) || vm.Title.Contains(str, StringComparison.InvariantCultureIgnoreCase));
             
             this.WhenAny(x => x.ModLists)
-                .SelectMany(lists => lists.Select(list =>
+                .SelectMany(lists => lists)
+                .ToObservableChangeSet(list => list.Links.MachineURL)
+                .Filter(searchFilter)
+                .Transform(list =>
                 {
                     var vm = App.GetService<GalleryItemVM>();
-                    vm.Key = list.Links.MachineURL;
                     vm.Title = list.ImageContainsTitle ? "" : list.Title;
                     vm.ImageUrl = list.Links.ImageUri;
                     vm.Description = list.Description;
                     vm.Commands = MakeCommands(list);
                     return vm;
-                }))
-                .ToObservableChangeSet(x => x.Key)
-                .Filter(searchFilter)
+                })
                 .Bind(ModListVMs)
                 .Subscribe()
                 .DisposeWith(CompositeDisposable);

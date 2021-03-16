@@ -24,8 +24,6 @@ namespace Wabbajack.App.Controls
         [Reactive]
         public GalleryItemCommandVM[] Commands { get; set; } = Array.Empty<GalleryItemCommandVM>();
 
-        [Reactive] public string Key { get; set; } = "";
-
         public GalleryItemVM()
         {
             this.WhenAny(x => x.ImageUrl)
