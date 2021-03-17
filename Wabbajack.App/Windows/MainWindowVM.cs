@@ -29,7 +29,7 @@ namespace Wabbajack.App
             _globalInformation = globalInformation;
             _router = router;
             VersionString = _globalInformation.Version.ToString();
-            CurrentScreen = _screens.First().Value;
+            CurrentScreen = _screens[typeof(ModListManager)];
 
             // Bind NavigateTo events to CurrentScreen
             _router.Events.OfType<NavigateToEvent>()
