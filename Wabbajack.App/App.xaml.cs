@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Wabbajack.App.Screens;
 using Wabbajack.App.Services;
 using Wabbajack.Common;
+using Wabbajack.Lib.LibCefHelpers;
 
 namespace Wabbajack.App
 {
@@ -16,6 +17,7 @@ namespace Wabbajack.App
         public App()
         {
             LoggingSettings.LogToFile = true;
+            Helpers.Init();
             
             ServiceCollection services = new ServiceCollection();
             ConfigureServices(services);

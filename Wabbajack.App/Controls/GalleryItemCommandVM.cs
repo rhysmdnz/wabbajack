@@ -1,4 +1,5 @@
-﻿using System.Reactive;
+﻿using System;
+using System.Reactive;
 using MahApps.Metro.IconPacks;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -15,7 +16,9 @@ namespace Wabbajack.App.Controls
         {
             CommandType.Download => PackIconFontAwesomeKind.DownloadSolid,
             CommandType.Web => PackIconFontAwesomeKind.InfoSolid,
-            CommandType.Play => PackIconFontAwesomeKind.PlaySolid
+            CommandType.Play => PackIconFontAwesomeKind.PlaySolid,
+            CommandType.Cancel => PackIconFontAwesomeKind.TrashSolid,
+            _ => throw new ArgumentOutOfRangeException()
         };
         public GalleryItemCommandVM()
         {

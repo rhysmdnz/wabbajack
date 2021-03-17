@@ -17,7 +17,8 @@ namespace Wabbajack.App.Screens
     public class ModListGalleryVM : ViewModel
     {
         private DownloadedModlistManager _downloadManager;
-        
+        private EventRouter _router;
+
         [Reactive]
         public bool ShowNSFW { get; set; }
 
@@ -34,9 +35,11 @@ namespace Wabbajack.App.Screens
         [Reactive] public bool OnlyInstalled { get; set; }
         [Reactive] public bool OnlyUtilityLists { get; set; }
 
-        public ModListGalleryVM(DownloadedModlistManager downloadManager)
+        public ModListGalleryVM(DownloadedModlistManager downloadManager, EventRouter router)
         {
             _downloadManager = downloadManager;
+            _router = router;
+            
             var tsk = ReloadLists();
 
             var searchFilter = this.WhenAny(x => x.SearchString)
@@ -96,7 +99,7 @@ namespace Wabbajack.App.Screens
                 {
                     Command = ReactiveCommand.Create(() =>
                     {
-                        
+                        _router.NavigateTo<ModListManager>();
                     },canExecute: haveList.Select(l => l != DownloadedModlistManager.Status.Downloading)),
                     Type = CommandType.Play
                 },
