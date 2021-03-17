@@ -6,6 +6,8 @@ using DynamicData.Alias;
 using ReactiveUI.Fody.Helpers;
 using Wabbajack.Lib;
 using System.Reactive.Linq;
+using DynamicData;
+using DynamicData.Binding;
 using MahApps.Metro.IconPacks;
 using ReactiveUI;
 using Wabbajack.Common;
@@ -22,7 +24,7 @@ namespace Wabbajack.App.Controls
         [Reactive] public string Description { get; set; } = "";
 
         [Reactive]
-        public GalleryItemCommandVM[] Commands { get; set; } = Array.Empty<GalleryItemCommandVM>();
+        public ObservableCollectionExtended<GalleryItemCommandVM> Commands { get; set; } = new();
 
         public GalleryItemVM()
         {
@@ -39,6 +41,7 @@ namespace Wabbajack.App.Controls
     {
         Download,
         Web,
+        Play,
         Cancel,
     }
 }

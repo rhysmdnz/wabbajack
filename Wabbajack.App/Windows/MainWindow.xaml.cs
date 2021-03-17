@@ -56,7 +56,7 @@ namespace Wabbajack.App
                     .DisposeWith(dispose);
 
                 StatusUtils.StatusMessages.ToObservableChangeSet().ToCollection()
-                    .Select(x => new Percent(x.Average(y => y.Percent.Value)))
+                    .Select(x => x.Count == 0 ? Percent.Zero : new Percent(x.Average(y => y.Percent.Value)))
                     .Select(x => x.Value)
                     .ObserveOnGuiThread()
                     .BindToStrict(this, x => x.TaskbarInfo.ProgressValue)

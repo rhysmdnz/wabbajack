@@ -90,8 +90,16 @@ namespace Wabbajack.App.Services
                         Name = path.FileName.ToString(),
                         Hash = list.DownloadMetadata.Hash
                     }, tmpPath);
+                var hash = await tmpPath.FileHashAsync();
+                if (hash != list.DownloadMetadata.Hash)
+                {
+                    Utils.Error($"Hash error after downloading modlist {list.Title} {list.Links.MachineURL} got {hash} expected {list.DownloadMetadata.Hash}");
+                    return;
+                }
+
                 await path.DeleteAsync();
                 await tmpPath.MoveToAsync(path);
+                path.FileHashWriteCache(hash.Value);
 
                 await list.ToJsonAsync(path.WithExtension(Consts.JsonExtension));
             }

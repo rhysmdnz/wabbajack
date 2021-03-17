@@ -10,14 +10,16 @@ namespace Wabbajack.Common
         private WorkQueue? _queue;
         private DateTime _lastUpdate;
         private TimeSpan _span;
+        private StatusTracker? _tracker;
 
-        public StatusFileStream(Stream fs, string message, WorkQueue? queue = null)
+        public StatusFileStream(Stream fs, string message, WorkQueue? queue = null, StatusTracker? tracker = null)
         {
             _queue = queue;
             _inner = fs;
             _message = message;
             _lastUpdate = DateTime.UnixEpoch;
             _span = TimeSpan.FromMilliseconds(100);
+            _tracker = tracker;
         }
 
         public override void Flush()
@@ -38,7 +40,9 @@ namespace Wabbajack.Common
         public override int Read(byte[] buffer, int offset, int count)
         {
             UpdateStatus();
-            return _inner.Read(buffer, offset, count);
+            var read = _inner.Read(buffer, offset, count);
+            _tracker?.Update(read);
+            return read;
         }
 
         private void UpdateStatus()

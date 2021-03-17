@@ -15,6 +15,7 @@ namespace Wabbajack.App.Controls
         {
             CommandType.Download => PackIconFontAwesomeKind.DownloadSolid,
             CommandType.Web => PackIconFontAwesomeKind.InfoSolid,
+            CommandType.Play => PackIconFontAwesomeKind.PlaySolid
         };
         public GalleryItemCommandVM()
         {

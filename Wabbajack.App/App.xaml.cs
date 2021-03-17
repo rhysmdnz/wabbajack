@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using DynamicData;
+﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Wabbajack.App.Screens;
 using Wabbajack.App.Services;
+using Wabbajack.Common;
 
 namespace Wabbajack.App
 {
@@ -21,6 +15,8 @@ namespace Wabbajack.App
 
         public App()
         {
+            LoggingSettings.LogToFile = true;
+            
             ServiceCollection services = new ServiceCollection();
             ConfigureServices(services);
             ServiceProvider = services.BuildServiceProvider();

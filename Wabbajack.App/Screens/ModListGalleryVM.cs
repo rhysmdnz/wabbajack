@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Linq;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using ReactiveUI;
@@ -13,7 +9,6 @@ using Wabbajack.Lib.ModListRegistry;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
-using DynamicData.PLinq;
 using Wabbajack.App.Services;
 using Wabbajack.Common;
 
@@ -63,11 +58,11 @@ namespace Wabbajack.App.Screens
                 .Filter(searchFilter)
                 .Transform(list =>
                 {
-                    var vm = App.GetService<GalleryItemVM>();
+                    var vm = App.GetService<GalleryItemVM>()!;
+                    MakeCommands(list).Bind(vm.Commands).Subscribe().DisposeWith(CompositeDisposable);
                     vm.Title = list.ImageContainsTitle ? "" : list.Title;
                     vm.ImageUrl = list.Links.ImageUri;
                     vm.Description = list.Description;
-                    vm.Commands = MakeCommands(list);
                     return vm;
                 })
                 .Bind(ModListVMs)
@@ -76,10 +71,10 @@ namespace Wabbajack.App.Screens
 
         }
         
-        private GalleryItemCommandVM[] MakeCommands(ModlistMetadata list)
+        private IObservable<IChangeSet<GalleryItemCommandVM, CommandType>> MakeCommands(ModlistMetadata list)
         {
             var haveList = _downloadManager.HaveModlist(list);
-            return new[]
+            var buttons = new[]
             {
                 new GalleryItemCommandVM()
                 {
@@ -94,10 +89,28 @@ namespace Wabbajack.App.Screens
                     Command = ReactiveCommand.CreateFromTask(async () =>
                     {
                         await _downloadManager.Download(list);
-                    }, canExecute: haveList.Select(l => l == DownloadedModlistManager.Status.NotDownloaded)),
+                    },canExecute: haveList.Select(l => l != DownloadedModlistManager.Status.Downloading)),
                     Type = CommandType.Download
-                }
+                },
+                new GalleryItemCommandVM()
+                {
+                    Command = ReactiveCommand.Create(() =>
+                    {
+                        
+                    },canExecute: haveList.Select(l => l != DownloadedModlistManager.Status.Downloading)),
+                    Type = CommandType.Play
+                },
             };
+            return buttons.AsObservableChangeSet(x => x.Type)
+                .Filter(_downloadManager.HaveModlist(list).Select<DownloadedModlistManager.Status, Func<GalleryItemCommandVM, bool>>(listState =>
+                {
+                    if (listState == DownloadedModlistManager.Status.Downloaded)
+                    {
+                        return vm => vm.Type != CommandType.Download;
+                    }
+
+                    return vm => vm.Type != CommandType.Play;
+                }));
         }
 
         public async Task ReloadLists()

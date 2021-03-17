@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Windows.Controls;
 using ReactiveUI;
 
@@ -16,6 +17,7 @@ namespace Wabbajack.App.Controls
                     .DisposeWith(dispose);
 
                 this.WhenAny(x => x.ViewModel!.AwesomeKind)
+                    .Select(x => x)
                     .BindToStrict(this, x => x.Icon.Kind)
                     .DisposeWith(dispose);
             });

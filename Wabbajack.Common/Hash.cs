@@ -288,9 +288,11 @@ namespace Wabbajack.Common
         {
             try
             {
+                using var status = new StatusTracker(StatusCategory.Disk | StatusCategory.Compute, file.Size,
+                    $"Computing file hash: {file.FileName}");
                 await using var fs = await file.OpenRead();
                 var config = new xxHashConfig { HashSizeInBits = 64 };
-                await using var hs = new StatusFileStream(fs, $"Hashing {file}");
+                await using var hs = new StatusFileStream(fs, $"Hashing {file}", tracker:status);
                 var value = await xxHashFactory.Instance.Create(config).ComputeHashAsync(hs);
                 return new Hash(BitConverter.ToUInt64(value.Hash));
             }
