@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using CefSharp;
-using CefSharp.OffScreen;
 using HtmlAgilityPack;
 using Wabbajack.Common;
 using Wabbajack.Lib.LibCefHelpers;
@@ -13,20 +11,20 @@ namespace Wabbajack.Lib.WebAutomation
 {
     public class Driver : IDisposable
     {
-        private IWebBrowser _browser;
-        private CefSharpWrapper _driver;
+        // private IWebBrowser _browser;
+        // private CefSharpWrapper _driver;
 
         public Driver()
         {
 
-            _browser = new ChromiumWebBrowser();
+            // _browser = new ChromiumWebBrowser();
 
-            _driver = new CefSharpWrapper(_browser);
+            // _driver = new CefSharpWrapper(_browser);
         }
         public static async Task<Driver> Create()
         {
             var driver = new Driver();
-            await driver._driver.WaitForInitialized();
+            // await driver._driver.WaitForInitialized();
             return driver;
         }
 
@@ -34,7 +32,7 @@ namespace Wabbajack.Lib.WebAutomation
         {
             try
             {
-                await _driver.NavigateTo(uri, token);
+                // await _driver.NavigateTo(uri, token);
                 return await GetLocation();
             }
             catch (TaskCanceledException ex)
@@ -59,7 +57,8 @@ namespace Wabbajack.Lib.WebAutomation
         {
             try
             {
-                return await _driver.NavigateToAndDownload(uri, absolutePath, quickMode: quickMode, token: token);
+                // return await _driver.NavigateToAndDownload(uri, absolutePath, quickMode: quickMode, token: token);
+                return 0;
             }
             catch (TaskCanceledException ex) {
                 await DumpState(uri, ex);
@@ -71,7 +70,9 @@ namespace Wabbajack.Lib.WebAutomation
         {
             try
             {
-                return new Uri(_browser.Address);
+                return new Uri("https://google.com");
+                // return new Uri(_browser.Address);
+
             }
             catch (UriFormatException)
             {
@@ -81,7 +82,8 @@ namespace Wabbajack.Lib.WebAutomation
 
         public async ValueTask<string> GetSourceAsync()
         {
-            return await _browser.GetSourceAsync();
+            // return await _browser.GetSourceAsync();
+            return "";
         }
         
         public async ValueTask<HtmlDocument> GetHtmlAsync()
@@ -92,23 +94,27 @@ namespace Wabbajack.Lib.WebAutomation
             return doc;
         }
 
-        public Action<Uri?> DownloadHandler { 
-            set => _driver.DownloadHandler = value;
-        }
+        // public Action<Uri?> DownloadHandler { 
+        //     set => _driver.DownloadHandler = value;
+        // }
+
+        public string hi() { return ""; }
 
         public Task<string> GetAttr(string selector, string attr)
         {
-            return _driver.EvaluateJavaScript($"document.querySelector(\"{selector}\").{attr}");
+            // return _driver.EvaluateJavaScript($"document.querySelector(\"{selector}\").{attr}");
+            return new Task<string>(new Func<string>(hi));
         }
 
         public Task<string> EvalJavascript(string js)
         {
-            return _driver.EvaluateJavaScript(js);
+            // return _driver.EvaluateJavaScript(js);
+            return new Task<string>(new Func<string>(hi));
         }
 
         public void Dispose()
         {
-            _browser.Dispose();
+            // _browser.Dispose();
         }
 
         public static void ClearCache()

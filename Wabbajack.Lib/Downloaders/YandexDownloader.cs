@@ -53,7 +53,7 @@ namespace Wabbajack.Lib.Downloaders
             {
                 using var driver = await WebAutomation.Driver.Create();
                 var tcs = new TaskCompletionSource<Uri?>();
-                driver.DownloadHandler = uri => tcs.SetResult(uri);
+                // driver.DownloadHandler = uri => tcs.SetResult(uri);
                 await driver.NavigateTo(Url);
                 await driver.EvalJavascript("document.getElementsByClassName(\"download-button\")[0].click();");
                 var uri = await tcs.Task;
