@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
+    <TargetFramework>net5.0</TargetFramework>
+    <UseWPF>false</UseWPF>
     <Platforms>x64</Platforms>
     <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
       <AssemblyVersion>2.4.3.1</AssemblyVersion>
@@ -24,21 +24,6 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
-    <ItemGroup>
-        <!-- TODO: These updates are currently required because CefSharp.Wpf specifies
-             <Private>false</Private>, which means these libraries will not be specified in
-             the .deps.json file, and so the CoreCLR wouldn't load these. -->
-        <Reference Update="CefSharp">
-            <Private>true</Private>
-        </Reference>
-        <Reference Update="CefSharp.Core">
-            <Private>true</Private>
-        </Reference>
-        <Reference Update="CefSharp.Wpf">
-            <Private>true</Private>
-        </Reference>
-    </ItemGroup>
-
   <ItemGroup>
     <None Remove="Readme.md" />
     <None Remove="Resources\GameGridIcons\Fallout4.png" />
@@ -55,11 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="cef.redist.x64" Version="88.2.9" />
-      <PackageReference Include="CefSharp.Common" Version="88.2.90" />
-      <PackageReference Include="CefSharp.Wpf" Version="88.2.90" />
     <PackageReference Include="DynamicData" Version="7.1.1" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
     <PackageReference Include="Fody" Version="6.4.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

@@ -38,23 +38,24 @@ namespace Wabbajack.Common.StoreHandlers
         private const string SteamRegKey = @"Software\Valve\Steam";
 
         public AbsolutePath SteamPath { get; set; }
-        private AbsolutePath SteamConfig => new RelativePath("config//config.vdf").RelativeTo(SteamPath);
+        private AbsolutePath SteamConfig => new RelativePath("config/config.vdf").RelativeTo(SteamPath);
         private List<AbsolutePath>? SteamUniverses { get; set; }
 
         public override bool Init()
         {
             try
             {
-                var steamKey = Registry.CurrentUser.OpenSubKey(SteamRegKey);
+                // var steamKey = Registry.CurrentUser.OpenSubKey(SteamRegKey);
 
-                var steamPathKey = steamKey?.GetValue("SteamPath");
-                if (steamPathKey == null)
-                {
-                    Utils.Error(new StoreException("Could not open the SteamPath registry key!"));
-                    return false;
-                }
+                // var steamPathKey = steamKey?.GetValue("SteamPath");
+                // if (steamPathKey == null)
+                // {
+                //     Utils.Error(new StoreException("Could not open the SteamPath registry key!"));
+                //     return false;
+                // }
 
-                var steamPath = steamPathKey.ToString() ?? string.Empty;
+                // var steamPath = steamPathKey.ToString() ?? string.Empty;
+                var steamPath = "/home/rhys/.steam/steam";
                 if (string.IsNullOrWhiteSpace(steamPath))
                 {
                     Utils.Error(new StoreException("Path to the Steam Directory from registry is Null or Empty!"));
@@ -112,7 +113,7 @@ namespace Wabbajack.Common.StoreHandlers
 
             // Default path in the Steam folder isn't in the configs
             var defaultPath = new RelativePath("steamapps").RelativeTo(SteamPath);
-            if(defaultPath.Exists)
+            if (defaultPath.Exists)
                 ret.Add(defaultPath);
 
             return ret;
@@ -158,16 +159,16 @@ namespace Wabbajack.Common.StoreHandlers
 
                         var value = GetVdfValue(l);
                         AbsolutePath absPath;
-                        
+
                         if (Path.IsPathRooted(value))
-                        { 
+                        {
                             absPath = (AbsolutePath)value;
                         }
                         else
                         {
                             absPath = new RelativePath("common").Combine(GetVdfValue(l)).RelativeTo(u);
                         }
-                        
+
                         if (absPath.Exists)
                             game.Path = absPath;
 

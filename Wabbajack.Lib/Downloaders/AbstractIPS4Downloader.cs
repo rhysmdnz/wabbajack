@@ -449,10 +449,10 @@ namespace Wabbajack.Lib.Downloaders
 
                 using var driver = await Downloader.GetAuthedDriver();
                 TaskCompletionSource<Uri?> promise = new();
-                driver.DownloadHandler = uri1 =>
-                {
-                    promise.SetResult(uri);
-                };
+                // driver.DownloadHandler = uri1 =>
+                // {
+                //     promise.SetResult(uri);
+                // };
                 await driver.NavigateTo(uri);
 
                 var url = await promise.Task;

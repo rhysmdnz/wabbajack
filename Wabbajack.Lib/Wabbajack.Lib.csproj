@@ -1,18 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-      <TargetFramework>net5.0-windows</TargetFramework>
+      <TargetFramework>net5.0</TargetFramework>
       <Platforms>x64</Platforms>
       <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
       <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="CefSharp.Common">
+      <!-- <PackageReference Include="CefSharp.Common">
         <Version>88.2.90</Version>
-      </PackageReference>
-      <PackageReference Include="CefSharp.OffScreen">
+      </PackageReference> -->
+      <!-- <PackageReference Include="CefSharp.OffScreen">
         <Version>88.2.90</Version>
-      </PackageReference>
+      </PackageReference> -->
       <PackageReference Include="F23.StringSimilarity">
         <Version>4.0.0</Version>
       </PackageReference>
@@ -73,7 +73,7 @@
       <ProjectReference Include="..\Wabbajack.VirtualFileSystem\Wabbajack.VirtualFileSystem.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <None Remove="LibCefHelpers\cefsharp.7z" />
+      <!-- <None Remove="LibCefHelpers\cefsharp.7z" /> -->
       <None Update="Downloaders\BethesdaNet\bethnetlogin.exe">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>

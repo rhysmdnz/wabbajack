@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Alphaleonis.Win32.Filesystem;
+// using Alphaleonis.Win32.Filesystem;
+using System.IO;
 using Wabbajack.Common;
 
 namespace Wabbajack.Lib
@@ -34,7 +35,7 @@ namespace Wabbajack.Lib
                     $"Starting Drive watcher on {drive.Name} currently {drive.AvailableFreeSpace.ToFileSizeString()} free out of {drive.TotalSize.ToFileSizeString()}");
             }
 
-            
+
             while (true)
             {
                 foreach (var drive in _drives)

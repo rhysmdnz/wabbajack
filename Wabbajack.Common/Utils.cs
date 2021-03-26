@@ -41,7 +41,7 @@ namespace Wabbajack.Common
             InitalizeLogging().Wait();
         }
 
-        private static readonly string[] Suffix = {"B", "KB", "MB", "GB", "TB", "PB", "EB"}; // Longs run out around EB
+        private static readonly string[] Suffix = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; // Longs run out around EB
 
         public static void CopyToWithStatus(this Stream istream, long maxSize, Stream ostream, string status)
         {
@@ -57,13 +57,13 @@ namespace Wabbajack.Common
                 Status(status, Percent.FactoryPutInRange(totalRead, maxSize));
             }
         }
-        
+
         public static async Task CopyToWithStatusAsync(this Stream istream, long maxSize, Stream ostream, string status)
         {
             var buffer = new byte[1024 * 64];
             if (maxSize == 0) maxSize = 1;
             long totalRead = 0;
-            long remain = maxSize; 
+            long remain = maxSize;
             while (true)
             {
                 var toRead = Math.Min(buffer.Length, remain);
@@ -109,10 +109,10 @@ namespace Wabbajack.Common
             dtDateTime = dtDateTime.AddSeconds(timestamp);
             return dtDateTime;
         }
-        
+
         public static ulong AsUnixTime(this DateTime timestamp)
         {
-            var diff = timestamp - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc); 
+            var diff = timestamp - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             return (ulong)diff.TotalSeconds;
         }
 
@@ -136,7 +136,7 @@ namespace Wabbajack.Common
         {
             foreach (var i in coll) f(i);
         }
-        
+
         /// <summary>
         ///     Executes the action for every item in coll
         /// </summary>
@@ -157,7 +157,7 @@ namespace Wabbajack.Common
                 idx += 1;
             }
         }
-        
+
         public static async Task DoIndexed<T>(this IEnumerable<T> coll, Func<int, T, Task> f)
         {
             var idx = 0;
@@ -171,13 +171,13 @@ namespace Wabbajack.Common
         public static Task PDoIndexed<T>(this IEnumerable<T> coll, WorkQueue queue, Action<int, T> f)
         {
             return coll.Zip(Enumerable.Range(0, int.MaxValue), (v, idx) => (v, idx))
-                       .PMap(queue, vs=> f(vs.idx, vs.v));
+                       .PMap(queue, vs => f(vs.idx, vs.v));
         }
 
 
         private static IniDataParser IniParser()
         {
-            var config = new IniParserConfiguration {AllowDuplicateKeys = true, AllowDuplicateSections = true};
+            var config = new IniParserConfiguration { AllowDuplicateKeys = true, AllowDuplicateSections = true };
             var parser = new IniDataParser(config);
             return parser;
         }
@@ -294,7 +294,7 @@ namespace Wabbajack.Common
             await ins.CopyToAsync(ms);
             return ms.ToArray();
         }
-        
+
         public static async Task<string> ReadAllTextAsync(this Stream ins)
         {
             await using var ms = new MemoryStream();
@@ -461,7 +461,7 @@ namespace Wabbajack.Common
                 });
                 return tc.Task;
             }).ToList();
-            
+
             // To avoid thread starvation, we'll start to help out in the work queue
             if (WorkQueue.WorkerThread)
             {
@@ -477,7 +477,7 @@ namespace Wabbajack.Common
 
             await Task.WhenAll(tasks);
         }
-        
+
 
         public static async Task PMap<TI>(this IEnumerable<TI> coll, WorkQueue queue, Action<TI> f)
         {
@@ -497,7 +497,7 @@ namespace Wabbajack.Common
                 f(i);
             });
         }
-        
+
         public static async Task DoProgress<T>(this IEnumerable<T> coll, string msg, Func<T, Task> f)
         {
             var lst = coll.ToList();
@@ -619,7 +619,7 @@ namespace Wabbajack.Common
                 .Build();
             return d.Deserialize<T>(new StringReader(s));
         }
-        
+
         public static T FromYaml<T>(this AbsolutePath s)
         {
             var d = new DeserializerBuilder()
@@ -667,7 +667,7 @@ namespace Wabbajack.Common
                 Log($"Running Disk benchmark {Percent.FactoryPutInRange(x, seconds)} complete");
                 await Task.Delay(TimeSpan.FromSeconds(1));
             }
-            
+
             return (await results).Sum() / seconds;
         }
 
@@ -687,7 +687,7 @@ namespace Wabbajack.Common
             }
             var speed = await TestDiskSpeedInner(queue, path);
             await speed.ToJsonAsync(benchmarkFile);
-           
+
             return speed;
         }
 
@@ -750,22 +750,24 @@ namespace Wabbajack.Common
         /// <param name="path"></param>
         public static async Task DeleteDirectory(AbsolutePath path)
         {
-            if (!path.Exists)
-                return;
+            Directory.Delete(path.ToString(), true);
+            return;
+            // if (!path.Exists)
+            //     return;
 
-            var process = new ProcessHelper
-            {
-                Path = ((RelativePath)"cmd.exe").RelativeToSystemDirectory(),
-                Arguments = new object[] {"/c", "del", "/f", "/q", "/s", $"\"{(string)path}\"", "&&", "rmdir", "/q", "/s", $"\"{(string)path}\""},
-            };
-            var result = process.Output.Where(d => d.Type == ProcessHelper.StreamType.Output)
-                .ForEachAsync(p =>
-                {
-                    Status($"Deleting: {p.Line}");
-                });
+            // var process = new ProcessHelper
+            // {
+            //     Path = ((RelativePath)"cmd.exe").RelativeToSystemDirectory(),
+            //     Arguments = new object[] { "/c", "del", "/f", "/q", "/s", $"\"{(string)path}\"", "&&", "rmdir", "/q", "/s", $"\"{(string)path}\"" },
+            // };
+            // var result = process.Output.Where(d => d.Type == ProcessHelper.StreamType.Output)
+            //     .ForEachAsync(p =>
+            //     {
+            //         Status($"Deleting: {p.Line}");
+            //     });
 
-            var exitCode = await process.Start();
-            await result;
+            // var exitCode = await process.Start();
+            // await result;
         }
 
         public static bool IsUnderneathDirectory(string path, string dirPath)
@@ -800,18 +802,20 @@ namespace Wabbajack.Common
             return Encoding.UTF8.GetString(decoded).FromJsonString<T>();
         }
 
-        
+
         public static async ValueTask ToEcryptedData(this byte[] bytes, string key)
         {
-            var encoded = ProtectedData.Protect(bytes, Encoding.UTF8.GetBytes(key), DataProtectionScope.LocalMachine);
+            // var encoded = ProtectedData.Protect(bytes, Encoding.UTF8.GetBytes(key), DataProtectionScope.LocalMachine);
+            var encoded = bytes;
             Consts.LocalAppDataPath.CreateDirectory();
-            
+
             await Consts.LocalAppDataPath.Combine(key).WriteAllBytesAsync(encoded);
         }
         public static async Task<byte[]> FromEncryptedData(string key)
         {
             var bytes = await Consts.LocalAppDataPath.Combine(key).ReadAllBytesAsync();
-            return ProtectedData.Unprotect(bytes, Encoding.UTF8.GetBytes(key), DataProtectionScope.LocalMachine);
+            // return ProtectedData.Unprotect(bytes, Encoding.UTF8.GetBytes(key), DataProtectionScope.LocalMachine);
+            return bytes;
         }
 
         public static bool HaveEncryptedJson(string key)
@@ -863,7 +867,7 @@ namespace Wabbajack.Common
                 CreateNoWindow = true,
             });
         }
-        
+
         public static void OpenFolder(AbsolutePath path)
         {
             Process.Start(new ProcessStartInfo(AbsolutePath.WindowsFolder.Combine("explorer.exe").ToString(), path.ToString())
@@ -876,7 +880,7 @@ namespace Wabbajack.Common
         {
             return path.ToLower().TrimEnd('\\').StartsWith(parent.ToLower().TrimEnd('\\') + "\\", StringComparison.OrdinalIgnoreCase);
         }
-        
+
         public static async Task CopyToLimitAsync(this Stream frm, Stream tw, long limit)
         {
             var buff = new byte[1024];
@@ -937,7 +941,7 @@ namespace Wabbajack.Common
             random.NextBytes(bytes);
             return bytes.ToHex();
         }
-        
+
         public static byte[] RandomData(int size)
         {
             var random = new Random();
@@ -975,7 +979,7 @@ namespace Wabbajack.Common
             if (lst.Count > 0 && lst.Count != size)
                 yield return lst;
         }
-       
+
         private static Random _random = new Random();
         public static int NextRandom(int min, int max)
         {

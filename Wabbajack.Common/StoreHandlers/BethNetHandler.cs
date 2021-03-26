@@ -14,7 +14,7 @@ namespace Wabbajack.Common.StoreHandlers
         public override StoreType Type { get; internal set; } = StoreType.BethNet;
 
         public AbsolutePath InstallPath;
-        
+
     }
 
     public class BethNetHandler : AStoreHandler
@@ -29,6 +29,7 @@ namespace Wabbajack.Common.StoreHandlers
 
         public override bool Init()
         {
+            return false;
             try
             {
                 var key = Registry.LocalMachine.OpenSubKey(RegKey);
@@ -113,7 +114,7 @@ namespace Wabbajack.Common.StoreHandlers
                     }
                 });
             }
-            
+
             possibleGames.Do(g =>
             {
                 try

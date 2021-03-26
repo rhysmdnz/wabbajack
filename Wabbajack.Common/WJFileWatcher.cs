@@ -19,7 +19,8 @@ namespace Wabbajack.Common
 
         static WJFileWatcher()
         {
-            var watcher = new FileSystemWatcher((string)Consts.LocalAppDataPath);
+            // var watcher = new FileSystemWatcher((string)Consts.LocalAppDataPath);
+            var watcher = new FileSystemWatcher("/home/rhys/.local/share/Wabbajack");
             AppLocalEvents = Observable.Merge(
                     Observable.FromEventPattern<FileSystemEventHandler, FileSystemEventArgs>(h => watcher.Changed += h, h => watcher.Changed -= h).Select(e => (FileEventType.Changed, e.EventArgs)),
                     Observable.FromEventPattern<FileSystemEventHandler, FileSystemEventArgs>(h => watcher.Created += h, h => watcher.Created -= h).Select(e => (FileEventType.Created, e.EventArgs)),

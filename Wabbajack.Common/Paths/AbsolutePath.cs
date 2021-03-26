@@ -8,11 +8,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Alphaleonis.Win32.Filesystem;
 using Wabbajack.Common.IO;
-using Directory = Alphaleonis.Win32.Filesystem.Directory;
-using DriveInfo = Alphaleonis.Win32.Filesystem.DriveInfo;
-using File = Alphaleonis.Win32.Filesystem.File;
-using FileInfo = Alphaleonis.Win32.Filesystem.FileInfo;
-using Path = Alphaleonis.Win32.Filesystem.Path;
+using File = System.IO.File;
+using Directory = System.IO.Directory;
+using DriveInfo = System.IO.DriveInfo;
+using FileInfo = System.IO.FileInfo;
+using Path = System.IO.Path;
+// using Directory = Alphaleonis.Win32.Filesystem.Directory;
+// using DriveInfo = Alphaleonis.Win32.Filesystem.DriveInfo;
+// using File = Alphaleonis.Win32.Filesystem.File;
+// using FileInfo = Alphaleonis.Win32.Filesystem.FileInfo;
+// using Path = Alphaleonis.Win32.Filesystem.Path;
 
 namespace Wabbajack.Common
 {
@@ -48,7 +53,8 @@ namespace Wabbajack.Common
 
         public AbsolutePath(string path, bool skipValidation = false)
         {
-            _nullable_path = path.Replace("/", "\\").TrimEnd('\\');
+            _nullable_path = path.Replace("\\", "/").TrimEnd('/');
+            // _nullable_path = path;
             if (!skipValidation)
             {
                 ValidateAbsolutePath();
@@ -62,6 +68,7 @@ namespace Wabbajack.Common
 
         private void ValidateAbsolutePath()
         {
+            // return;
             if (Path.IsPathRooted(_path))
             {
                 return;
@@ -77,7 +84,8 @@ namespace Wabbajack.Common
 
         public DriveInfo DriveInfo()
         {
-            return new DriveInfo(Path.GetPathRoot(_path));
+            string? path = Path.GetPathRoot(_path);
+            return new DriveInfo((path != null) ? path : "");
         }
 
         public Extension Extension => Extension.FromPath(_path);
@@ -90,13 +98,15 @@ namespace Wabbajack.Common
         public ValueTask<FileStream> Create()
         {
             var path = _path;
-            return CircuitBreaker.WithAutoRetryAsync<FileStream, IOException>(async () => File.Open(path, FileMode.Create, FileAccess.ReadWrite, FileShare.Read, 1024 * 32));
+            // return CircuitBreaker.WithAutoRetryAsync<FileStream, IOException>(async () => File.Open(path, FileMode.Create, FileAccess.ReadWrite, FileShare.Read, 1024 * 32));
+            return CircuitBreaker.WithAutoRetryAsync<FileStream, IOException>(async () => File.Open(path, FileMode.Create, FileAccess.ReadWrite, FileShare.Read));
         }
 
         public ValueTask<FileStream> OpenWrite()
         {
             var path = _path;
-            return CircuitBreaker.WithAutoRetryAsync<FileStream, IOException>(async () => File.Open(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, 1024 * 32));
+            // return CircuitBreaker.WithAutoRetryAsync<FileStream, IOException>(async () => File.Open(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, 1024 * 32));
+            return CircuitBreaker.WithAutoRetryAsync<FileStream, IOException>(async () => File.Open(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read));
         }
 
         public async Task WriteAllTextAsync(string text)
@@ -127,7 +137,13 @@ namespace Wabbajack.Common
         }
 
         public DateTime LastModifiedUtc => File.GetLastWriteTimeUtc(_path);
-        public AbsolutePath Parent => (AbsolutePath)Path.GetDirectoryName(_path);
+        public AbsolutePath Parent => GetTmp2();
+
+        AbsolutePath GetTmp2()
+        {
+            string? path = Path.GetDirectoryName(_path);
+            return new AbsolutePath((path != null) ? path : "");
+        }
         public RelativePath FileName => (RelativePath)Path.GetFileName(_path);
         public RelativePath FileNameWithoutExtension => (RelativePath)Path.GetFileNameWithoutExtension(_path);
         public bool IsEmptyDirectory => IsDirectory && !EnumerateFiles().Any();
@@ -170,7 +186,13 @@ namespace Wabbajack.Common
         /// </summary>
         public static AbsolutePath WindowsFolder => (AbsolutePath)KnownFolders.Windows.Path;
 
-        public AbsolutePath Root => (AbsolutePath)Path.GetPathRoot(_path);
+        public AbsolutePath Root => GetTmp1();
+
+        public AbsolutePath GetTmp1()
+        {
+            string? path = Path.GetPathRoot(_path);
+            return new AbsolutePath((path != null) ? path : "");
+        }
 
         /// <summary>
         ///     Moves this file to the specified location, will use Copy if required
@@ -190,7 +212,8 @@ namespace Wabbajack.Common
             }
 
             var path = _path;
-            await CircuitBreaker.WithAutoRetryAsync<IOException>(async () => File.Move(path, otherPath._path, overwrite ? MoveOptions.ReplaceExisting : MoveOptions.None));
+            // await CircuitBreaker.WithAutoRetryAsync<IOException>(async () => File.Move(path, otherPath._path, overwrite ? MoveOptions.ReplaceExisting : MoveOptions.None));
+            await CircuitBreaker.WithAutoRetryAsync<IOException>(async () => File.Move(path, otherPath._path, overwrite));
         }
 
         public RelativePath RelativeTo(AbsolutePath p)
@@ -281,7 +304,8 @@ namespace Wabbajack.Common
 
         public bool InFolder(AbsolutePath folder)
         {
-            return _path.StartsWith(folder._path + Path.DirectorySeparator, StringComparison.OrdinalIgnoreCase);
+            // return _path.StartsWith(folder._path + Path.DirectorySeparator, StringComparison.OrdinalIgnoreCase);
+            return _path.StartsWith(folder._path + "/", StringComparison.OrdinalIgnoreCase);
         }
 
         public async Task<byte[]> ReadAllBytesAsync()
@@ -297,15 +321,17 @@ namespace Wabbajack.Common
 
         public AbsolutePath ReplaceExtension(Extension extension)
         {
+            string? path = Path.GetDirectoryName(_path);
             return new AbsolutePath(
-                Path.Combine(Path.GetDirectoryName(_path), Path.GetFileNameWithoutExtension(_path) + (string)extension),
+                Path.Combine((path != null) ? path : "", Path.GetFileNameWithoutExtension(_path) + (string)extension),
                 true);
         }
 
         public AbsolutePath AppendToName(string toAppend)
         {
+            string? path = Path.GetDirectoryName(_path);
             return new AbsolutePath(
-                Path.Combine(Path.GetDirectoryName(_path),
+                Path.Combine((path != null) ? path : "",
                     Path.GetFileNameWithoutExtension(_path) + toAppend + (string)Extension));
         }
 
@@ -339,7 +365,7 @@ namespace Wabbajack.Common
             if (disposeDataAfter) await data.DisposeAsync();
         }
 
-        [DllImport("kernel32.dll", SetLastError=true, CharSet=CharSet.Auto)]
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         private static extern bool CreateHardLink(string lpFileName, string lpExistingFileName, IntPtr lpSecurityAttributes);
 
         public bool HardLinkTo(AbsolutePath destination)
@@ -364,7 +390,7 @@ namespace Wabbajack.Common
 
         public async Task<IEnumerable<string>> ReadAllLinesAsync()
         {
-            return (await ReadAllTextAsync()).Split(new[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
+            return (await ReadAllTextAsync()).Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         public static AbsolutePath GetCurrentDirectory()
@@ -387,7 +413,7 @@ namespace Wabbajack.Common
 
         public async Task WriteAllLinesAsync(params string[] strings)
         {
-            await WriteAllTextAsync(string.Join("\r\n",strings));
+            await WriteAllTextAsync(string.Join("\r\n", strings));
         }
 
         public int CompareTo(AbsolutePath other)
@@ -403,15 +429,19 @@ namespace Wabbajack.Common
         public ValueTask<FileStream> OpenShared()
         {
             var path = _path;
+            // return CircuitBreaker.WithAutoRetryAsync<FileStream, IOException>(async () =>
+            //     File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize: 4096, useAsync: true));
             return CircuitBreaker.WithAutoRetryAsync<FileStream, IOException>(async () =>
-                File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize: 4096, useAsync: true));
+                File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
         }
 
         public ValueTask<FileStream> WriteShared()
         {
             var path = _path;
+            // return CircuitBreaker.WithAutoRetryAsync<FileStream, IOException>(async () =>
+            //     File.Open(path, FileMode.Open, FileAccess.Write, FileShare.ReadWrite, bufferSize: 4096, useAsync: true));
             return CircuitBreaker.WithAutoRetryAsync<FileStream, IOException>(async () =>
-                File.Open(path, FileMode.Open, FileAccess.Write, FileShare.ReadWrite, bufferSize: 4096, useAsync: true));
+                File.Open(path, FileMode.Open, FileAccess.Write, FileShare.ReadWrite));
         }
 
         public async Task CopyDirectoryToAsync(AbsolutePath destination)

@@ -14,13 +14,13 @@ namespace Wabbajack.Common
             if (_haveCompact != null && _haveCompact.Value) return _compactExecutable;
             if (_haveCompact != null) return null;
             _compactExecutable = ((AbsolutePath)KnownFolders.SystemX86.Path).Combine("compact.exe");
-            
+
             if (!_compactExecutable.Exists) return null;
 
             _haveCompact = true;
             return _compactExecutable;
         }
-        
+
         public enum Algorithm
         {
             XPRESS4K,
@@ -32,8 +32,8 @@ namespace Wabbajack.Common
         public static async Task<bool> Compact(this AbsolutePath path, Algorithm algorithm)
         {
             if (!path.Exists) return false;
-            
-            
+
+
             var exe = GetCompactPath();
             if (exe == null) return false;
 
@@ -42,7 +42,7 @@ namespace Wabbajack.Common
                 var proc = new ProcessHelper
                 {
                     Path = exe.Value,
-                    Arguments = new object[] {"/C", "/EXE:" + algorithm, path},
+                    Arguments = new object[] { "/C", "/EXE:" + algorithm, path },
                     ThrowOnNonZeroExitCode = false
                 };
                 return await proc.Start() == 0;
@@ -52,7 +52,7 @@ namespace Wabbajack.Common
                 var proc = new ProcessHelper
                 {
                     Path = exe.Value,
-                    Arguments = new object[] {"/C", "/S", "/EXE:" + algorithm, path},
+                    Arguments = new object[] { "/C", "/S", "/EXE:" + algorithm, path },
                     ThrowOnNonZeroExitCode = false
                 };
                 return await proc.Start() == 0;
@@ -61,12 +61,12 @@ namespace Wabbajack.Common
 
         public static async Task CompactFolder(this AbsolutePath folder, WorkQueue queue, Algorithm algorithm)
         {
-            var driveInfo = folder.DriveInfo().DiskSpaceInfo;
-            var clusterSize = driveInfo.SectorsPerCluster * driveInfo.BytesPerSector;
+            // var driveInfo = folder.DriveInfo().DiskSpaceInfo;
+            // var clusterSize = driveInfo.SectorsPerCluster * driveInfo.BytesPerSector;
 
             await folder
                 .EnumerateFiles(true)
-                .Where(f => f.Size > clusterSize)
+                // .Where(f => f.Size > clusterSize)
                 .PMap(queue, async path =>
                 {
                     Utils.Status($"Compacting {path.FileName}");

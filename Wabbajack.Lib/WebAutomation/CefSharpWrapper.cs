@@ -7,7 +7,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using CefSharp;
 using Wabbajack.Common;
 using Wabbajack.Common.Exceptions;
 using Wabbajack.Lib.LibCefHelpers;
@@ -16,32 +15,32 @@ namespace Wabbajack.Lib.WebAutomation
 {
     public class CefSharpWrapper : IWebDriver
     {
-        private readonly IWebBrowser _browser;
+        // private readonly IWebBrowser _browser;
         public Action<Uri>? DownloadHandler { get; set; }
-        public CefSharpWrapper(IWebBrowser browser)
+        public CefSharpWrapper()
         {
-            _browser = browser;
+            // _browser = browser;
 
-            _browser.DownloadHandler = new DownloadHandler(this);
-            _browser.LifeSpanHandler = new PopupBlocker(this);
+            // _browser.DownloadHandler = new DownloadHandler(this);
+            // _browser.LifeSpanHandler = new PopupBlocker(this);
         }
 
         public Task NavigateTo(Uri uri, CancellationToken? token = null)
         {
             var tcs = new TaskCompletionSource<bool>();
 
-            EventHandler<LoadingStateChangedEventArgs>? handler = null;
-            handler = (sender, e) =>
-            {
-                if (e.IsLoading) return;
+            // EventHandler<LoadingStateChangedEventArgs>? handler = null;
+            // handler = (sender, e) =>
+            // {
+            //     if (e.IsLoading) return;
 
-                _browser.LoadingStateChanged -= handler;
-                tcs.SetResult(true);
-            };
-            _browser.LoadingStateChanged += handler;
-            _browser.Load(uri.ToString());
-            token?.Register(() => tcs.TrySetCanceled());
-            
+            //     _browser.LoadingStateChanged -= handler;
+            //     tcs.SetResult(true);
+            // };
+            // _browser.LoadingStateChanged += handler;
+            // _browser.Load(uri.ToString());
+            // token?.Register(() => tcs.TrySetCanceled());
+
             return tcs.Task;
         }
 
@@ -62,21 +61,21 @@ namespace Wabbajack.Lib.WebAutomation
 
         public async Task<long> NavigateToAndDownload(Uri uri, AbsolutePath dest, bool quickMode = false, CancellationToken? token = null)
         {
-            var oldCB = _browser.DownloadHandler;
+            // var oldCB = _browser.DownloadHandler;
 
-            var handler = new ReroutingDownloadHandler(this, dest, quickMode: quickMode, token);
-            _browser.DownloadHandler = handler;
+            // var handler = new ReroutingDownloadHandler(this, dest, quickMode: quickMode, token);
+            // _browser.DownloadHandler = handler;
 
             try
             {
                 int retryCount = 0;
-                RETRY:
+RETRY:
                 await NavigateTo(uri, token);
-                var source = await _browser.GetSourceAsync();
+                // var source = await _browser.GetSourceAsync();
                 foreach (var err in KnownServerLoadStrings)
                 {
-                    if (!source.Contains(err))
-                        continue;
+                    // if (!source.Contains(err))
+                    //     continue;
 
                     if ((token?.IsCancellationRequested) == true)
                     {
@@ -94,26 +93,29 @@ namespace Wabbajack.Lib.WebAutomation
 
                 foreach (var (err, httpCode) in KnownErrorStrings)
                 {
-                    if (source.Contains(err))
-                        throw new HttpException(httpCode,$"Web driver failed: {err}");
+                    // if (source.Contains(err))
+                    //     throw new HttpException(httpCode, $"Web driver failed: {err}");
                 }
 
                 Utils.Log($"Loaded page {uri} starting download...");
-                return await handler.TaskResult;
+                // return await handler.TaskResult;
+                return 0;
             }
-            finally {
-                _browser.DownloadHandler = oldCB;
-           
+            finally
+            {
+                // _browser.DownloadHandler = oldCB;
+
             }
         }
 
         public async Task<string> EvaluateJavaScript(string text)
         {
-            var result = await _browser.EvaluateScriptAsync(text);
-            if (!result.Success)
-                throw new Exception(result.Message);
+            // var result = await _browser.EvaluateScriptAsync(text);
+            // if (!result.Success)
+            //     throw new Exception(result.Message);
 
-            return (string)result.Result;
+            // return (string)result.Result;
+            return "";
         }
 
         public Task<Helpers.Cookie[]> GetCookies(string domainPrefix)
@@ -125,107 +127,107 @@ namespace Wabbajack.Lib.WebAutomation
 
         public async Task WaitForInitialized()
         {
-            while (!_browser.IsBrowserInitialized)
-                await Task.Delay(100);
+            // while (!_browser.IsBrowserInitialized)
+            //     await Task.Delay(100);
         }
 
-        public string Location => _browser.Address;
+        // public string Location => _browser.Address;
 
     }
 
-    public class PopupBlocker : ILifeSpanHandler
-    {
-        private readonly CefSharpWrapper _wrapper;
+    // public class PopupBlocker : ILifeSpanHandler
+    // {
+    //     private readonly CefSharpWrapper _wrapper;
 
-        public PopupBlocker(CefSharpWrapper cefSharpWrapper)
-        {
-            _wrapper = cefSharpWrapper;
-        }
+    //     public PopupBlocker(CefSharpWrapper cefSharpWrapper)
+    //     {
+    //         _wrapper = cefSharpWrapper;
+    //     }
 
-        public bool OnBeforePopup(IWebBrowser chromiumWebBrowser, IBrowser browser, IFrame frame, string targetUrl,
-            string targetFrameName, WindowOpenDisposition targetDisposition, bool userGesture, IPopupFeatures popupFeatures,
-            IWindowInfo windowInfo, IBrowserSettings browserSettings, ref bool noJavascriptAccess, out IWebBrowser? newBrowser)
-        {
-            // Block popups
-            newBrowser = null;
-            return true;
-        }
+    //     public bool OnBeforePopup(IWebBrowser chromiumWebBrowser, IBrowser browser, IFrame frame, string targetUrl,
+    //         string targetFrameName, WindowOpenDisposition targetDisposition, bool userGesture, IPopupFeatures popupFeatures,
+    //         IWindowInfo windowInfo, IBrowserSettings browserSettings, ref bool noJavascriptAccess, out IWebBrowser? newBrowser)
+    //     {
+    //         // Block popups
+    //         newBrowser = null;
+    //         return true;
+    //     }
 
-        public void OnAfterCreated(IWebBrowser chromiumWebBrowser, IBrowser browser)
-        {
-        }
+    //     public void OnAfterCreated(IWebBrowser chromiumWebBrowser, IBrowser browser)
+    //     {
+    //     }
 
-        public bool DoClose(IWebBrowser chromiumWebBrowser, IBrowser browser)
-        {
-            return false;
-        }
+    //     public bool DoClose(IWebBrowser chromiumWebBrowser, IBrowser browser)
+    //     {
+    //         return false;
+    //     }
 
-        public void OnBeforeClose(IWebBrowser chromiumWebBrowser, IBrowser browser)
-        {
-        }
-    }
+    //     public void OnBeforeClose(IWebBrowser chromiumWebBrowser, IBrowser browser)
+    //     {
+    //     }
+    // }
 
-    public class ReroutingDownloadHandler : IDownloadHandler
-    {
-        private CefSharpWrapper _wrapper;
-        private AbsolutePath _path;
-        public TaskCompletionSource<long> _tcs = new TaskCompletionSource<long>();
-        private bool _quickMode;
-        private CancellationToken? _cancelationToken;
-        public Task<long> TaskResult => _tcs.Task;
+    // public class ReroutingDownloadHandler : IDownloadHandler
+    // {
+    //     private CefSharpWrapper _wrapper;
+    //     private AbsolutePath _path;
+    //     public TaskCompletionSource<long> _tcs = new TaskCompletionSource<long>();
+    //     private bool _quickMode;
+    //     private CancellationToken? _cancelationToken;
+    //     public Task<long> TaskResult => _tcs.Task;
 
-        public ReroutingDownloadHandler(CefSharpWrapper wrapper, AbsolutePath path, bool quickMode, CancellationToken? token)
-        {
-            _wrapper = wrapper;
-            _path = path;
-            _quickMode = quickMode;
-            _cancelationToken = token;
-            token?.Register(() => _tcs.TrySetCanceled());
-        }
+    //     public ReroutingDownloadHandler(CefSharpWrapper wrapper, AbsolutePath path, bool quickMode, CancellationToken? token)
+    //     {
+    //         _wrapper = wrapper;
+    //         _path = path;
+    //         _quickMode = quickMode;
+    //         _cancelationToken = token;
+    //         token?.Register(() => _tcs.TrySetCanceled());
+    //     }
 
-        public void OnBeforeDownload(IWebBrowser chromiumWebBrowser, IBrowser browser, DownloadItem downloadItem,
-            IBeforeDownloadCallback callback)
-        {
-            if (_quickMode) return;
-            
-            callback.Continue(_path.ToString(), false);
-        }
+    //     public void OnBeforeDownload(IWebBrowser chromiumWebBrowser, IBrowser browser, DownloadItem downloadItem,
+    //         IBeforeDownloadCallback callback)
+    //     {
+    //         if (_quickMode) return;
 
-        public void OnDownloadUpdated(IWebBrowser chromiumWebBrowser, IBrowser browser, DownloadItem downloadItem,
-            IDownloadItemCallback callback)
-        {
-            if (_quickMode)
-            {
-                callback.Cancel();
-                _tcs.TrySetResult(downloadItem.TotalBytes);
-                return;
-            }
-            
-            if (downloadItem.IsComplete)
-                _tcs.TrySetResult(downloadItem.TotalBytes);
-            callback.Resume();
-        }
-    }
+    //         callback.Continue(_path.ToString(), false);
+    //     }
 
-    public class DownloadHandler : IDownloadHandler
-    {
-        private CefSharpWrapper _wrapper;
+    //     public void OnDownloadUpdated(IWebBrowser chromiumWebBrowser, IBrowser browser, DownloadItem downloadItem,
+    //         IDownloadItemCallback callback)
+    //     {
+    //         if (_quickMode)
+    //         {
+    //             callback.Cancel();
+    //             _tcs.TrySetResult(downloadItem.TotalBytes);
+    //             return;
+    //         }
 
-        public DownloadHandler(CefSharpWrapper wrapper)
-        {
-            _wrapper = wrapper;
-        }
+    //         if (downloadItem.IsComplete)
+    //             _tcs.TrySetResult(downloadItem.TotalBytes);
+    //         callback.Resume();
+    //     }
+    // }
 
-        public void OnBeforeDownload(IWebBrowser chromiumWebBrowser, IBrowser browser, DownloadItem downloadItem,
-            IBeforeDownloadCallback callback)
-        {
-            _wrapper.DownloadHandler?.Invoke(new Uri(downloadItem.Url));
-        }
+    // public class DownloadHandler : IDownloadHandler
+    // {
+    //     private CefSharpWrapper _wrapper;
 
-        public void OnDownloadUpdated(IWebBrowser chromiumWebBrowser, IBrowser browser, DownloadItem downloadItem,
-            IDownloadItemCallback callback)
-        {
-            callback.Cancel();
-        }
-    }
+    //     public DownloadHandler(CefSharpWrapper wrapper)
+    //     {
+    //         _wrapper = wrapper;
+    //     }
+
+    //     public void OnBeforeDownload(IWebBrowser chromiumWebBrowser, IBrowser browser, DownloadItem downloadItem,
+    //         IBeforeDownloadCallback callback)
+    //     {
+    //         _wrapper.DownloadHandler?.Invoke(new Uri(downloadItem.Url));
+    //     }
+
+    //     public void OnDownloadUpdated(IWebBrowser chromiumWebBrowser, IBrowser browser, DownloadItem downloadItem,
+    //         IDownloadItemCallback callback)
+    //     {
+    //         callback.Cancel();
+    //     }
+    // }
 }

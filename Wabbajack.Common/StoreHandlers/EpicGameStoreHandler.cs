@@ -11,7 +11,7 @@ namespace Wabbajack.Common.StoreHandlers
         public string BaseRegKey = @"SOFTWARE\Epic Games\EOS";
         public override bool Init()
         {
-            return true;
+            return false;
         }
 
         public override bool LoadAllGames()

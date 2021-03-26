@@ -22,28 +22,28 @@ namespace Wabbajack.Common.StoreHandlers
 
         public override bool Init()
         {
-            try
-            {
-                var gogKey = Registry.LocalMachine.OpenSubKey(GOGRegKey) ??
-                             Registry.LocalMachine.OpenSubKey(GOG64RegKey);
+            // try
+            // {
+            //     var gogKey = Registry.LocalMachine.OpenSubKey(GOGRegKey) ??
+            //                  Registry.LocalMachine.OpenSubKey(GOG64RegKey);
 
-                if (gogKey == null)
-                {
-                    Utils.Error(new StoreException("Could not open the GOG registry key!"));
-                    return false;
-                }
+            //     if (gogKey == null)
+            //     {
+            //         Utils.Error(new StoreException("Could not open the GOG registry key!"));
+            //         return false;
+            //     }
 
-                GOGKey = gogKey;
-                return true;
-            }
-            catch (SecurityException se)
-            {
-                Utils.Error(se, "GOGHandler could not read from registry!");
-            }
-            catch (UnauthorizedAccessException uae)
-            {
-                Utils.Error(uae, "GOGHandler could not read from registry!");
-            }
+            //     GOGKey = gogKey;
+            //     return true;
+            // }
+            // catch (SecurityException se)
+            // {
+            //     Utils.Error(se, "GOGHandler could not read from registry!");
+            // }
+            // catch (UnauthorizedAccessException uae)
+            // {
+            //     Utils.Error(uae, "GOGHandler could not read from registry!");
+            // }
 
             return false;
         }
@@ -95,13 +95,13 @@ namespace Wabbajack.Common.StoreHandlers
 
                     var game = new GOGGame
                     {
-                        ID = gameID, 
-                        Name = gameName, 
+                        ID = gameID,
+                        Name = gameName,
                         Path = (AbsolutePath)path
                     };
 
                     var gameMeta = GameRegistry.Games.Values.FirstOrDefault(g => (g.GOGIDs?.Contains(gameID) ?? false));
-                    
+
                     if (gameMeta == null)
                     {
                         Utils.Log($"GOG Game \"{gameName}\" ({gameID}) is not supported, skipping");

@@ -75,20 +75,20 @@ namespace Wabbajack.VirtualFileSystem
                 case Definitions.FileType.RAR_NEW:
                 case Definitions.FileType._7Z:
                 case Definitions.FileType.ZIP:
-                {
-                    if (sFn.Name.FileName.Extension == OMODExtension)
                     {
-                        results = await GatheringExtractWithOMOD(archive, shouldExtract, mapfn);
+                        if (sFn.Name.FileName.Extension == OMODExtension)
+                        {
+                            results = await GatheringExtractWithOMOD(archive, shouldExtract, mapfn);
 
-                    }
-                    else
-                    {
-                        results = await GatheringExtractWith7Zip<T>(queue, sFn, (Definitions.FileType)sig, shouldExtract,
-                            mapfn, tempFolder.Value, onlyFiles);
-                    }
+                        }
+                        else
+                        {
+                            results = await GatheringExtractWith7Zip<T>(queue, sFn, (Definitions.FileType)sig, shouldExtract,
+                                mapfn, tempFolder.Value, onlyFiles);
+                        }
 
-                    break;
-                }
+                        break;
+                    }
 
                 case Definitions.FileType.BSA:
                 case Definitions.FileType.BA2:
@@ -113,7 +113,7 @@ namespace Wabbajack.VirtualFileSystem
             return results;
         }
 
-        private static async Task<Dictionary<RelativePath,T>> GatheringExtractWithOMOD<T>(Stream archive, Predicate<RelativePath> shouldExtract, Func<RelativePath,IExtractedFile,ValueTask<T>> mapfn)
+        private static async Task<Dictionary<RelativePath, T>> GatheringExtractWithOMOD<T>(Stream archive, Predicate<RelativePath> shouldExtract, Func<RelativePath, IExtractedFile, ValueTask<T>> mapfn)
         {
             var tmpFile = new TempFile();
             await tmpFile.Path.WriteAllAsync(archive);
@@ -161,7 +161,7 @@ namespace Wabbajack.VirtualFileSystem
         }
 
 
-        private static async Task<Dictionary<RelativePath,T>> GatheringExtractWithBSA<T>(IStreamFactory sFn, Definitions.FileType sig, Predicate<RelativePath> shouldExtract, Func<RelativePath,IExtractedFile,ValueTask<T>> mapfn)
+        private static async Task<Dictionary<RelativePath, T>> GatheringExtractWithBSA<T>(IStreamFactory sFn, Definitions.FileType sig, Predicate<RelativePath> shouldExtract, Func<RelativePath, IExtractedFile, ValueTask<T>> mapfn)
         {
             var archive = await BSADispatch.OpenRead(sFn, sig);
             var results = new Dictionary<RelativePath, T>();
@@ -177,7 +177,7 @@ namespace Wabbajack.VirtualFileSystem
             return results;
         }
 
-        private static async Task<Dictionary<RelativePath,T>> GatheringExtractWith7Zip<T>(WorkQueue queue, IStreamFactory sf, Definitions.FileType sig, Predicate<RelativePath> shouldExtract, Func<RelativePath,IExtractedFile,ValueTask<T>> mapfn,
+        private static async Task<Dictionary<RelativePath, T>> GatheringExtractWith7Zip<T>(WorkQueue queue, IStreamFactory sf, Definitions.FileType sig, Predicate<RelativePath> shouldExtract, Func<RelativePath, IExtractedFile, ValueTask<T>> mapfn,
             AbsolutePath tempPath, HashSet<RelativePath> onlyFiles)
         {
             TempFile tmpFile = null;
@@ -205,15 +205,16 @@ namespace Wabbajack.VirtualFileSystem
                 Utils.Log(new GenericInfo($"Extracting {(string)source.FileName}",
                     $"The contents of {(string)source.FileName} are being extracted to {(string)source.FileName} using 7zip.exe"));
 
-                var process = new ProcessHelper {Path = @"Extractors\7z.exe".RelativeTo(AbsolutePath.EntryPoint),};
+                var process = new ProcessHelper { Path = new AbsolutePath(@"/usr/bin/7z"), };
 
                 if (onlyFiles != null)
                 {
                     //It's stupid that we have to do this, but 7zip's file pattern matching isn't very fuzzy
                     IEnumerable<string> AllVariants(string input)
                     {
+                        input = input.Replace("\\", "/");
                         yield return $"\"{input}\"";
-                        yield return $"\"\\{input}\"";
+                        yield return $"\"/{input}\"";
                     }
 
                     tmpFile = new TempFile();
@@ -225,7 +226,7 @@ namespace Wabbajack.VirtualFileSystem
                 }
                 else
                 {
-                    process.Arguments = new object[] {"x", "-bsp1", "-y", $"-o\"{dest}\"", source, "-mmt=off"};
+                    process.Arguments = new object[] { "x", "-bsp1", "-y", $"-o\"{dest}\"", source, "-mmt=off" };
                 }
 
 

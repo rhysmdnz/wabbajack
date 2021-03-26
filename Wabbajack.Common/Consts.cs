@@ -24,19 +24,19 @@ namespace Wabbajack.Common
         public static string MegaPrefix = "https://mega.nz/#!";
         public static string MegaFilePrefix = "https://mega.nz/file/";
 
-        public static readonly HashSet<Extension> SupportedArchives = new[]{".zip", ".rar", ".7z", ".7zip", ".fomod", ".omod", ".exe", ".dat", ".gz", ".tar"}
+        public static readonly HashSet<Extension> SupportedArchives = new[] { ".zip", ".rar", ".7z", ".7zip", ".fomod", ".omod", ".exe", ".dat", ".gz", ".tar" }
             .Select(s => new Extension(s)).ToHashSet();
 
         // HashSet with archive extensions that need to be tested before extraction
-        public static HashSet<Extension> TestArchivesBeforeExtraction = new []{".dat"}.Select(s => new Extension(s)).ToHashSet();
+        public static HashSet<Extension> TestArchivesBeforeExtraction = new[] { ".dat" }.Select(s => new Extension(s)).ToHashSet();
 
-        public static readonly HashSet<Extension> SupportedBSAs = new[] {".bsa", ".ba2"}
+        public static readonly HashSet<Extension> SupportedBSAs = new[] { ".bsa", ".ba2" }
             .Select(s => new Extension(s)).ToHashSet();
 
-        public static HashSet<Extension> ConfigFileExtensions = new[]{".json", ".ini", ".yml", ".xml"}.Select(s => new Extension(s)).ToHashSet();
-        public static HashSet<Extension> ESPFileExtensions = new []{ ".esp", ".esm", ".esl"}.Select(s => new Extension(s)).ToHashSet();
-        public static HashSet<Extension> AssetFileExtensions = new[] {".dds", ".tga", ".nif", ".psc", ".pex"}.Select(s => new Extension(s)).ToHashSet();
-        
+        public static HashSet<Extension> ConfigFileExtensions = new[] { ".json", ".ini", ".yml", ".xml" }.Select(s => new Extension(s)).ToHashSet();
+        public static HashSet<Extension> ESPFileExtensions = new[] { ".esp", ".esm", ".esl" }.Select(s => new Extension(s)).ToHashSet();
+        public static HashSet<Extension> AssetFileExtensions = new[] { ".dds", ".tga", ".nif", ".psc", ".pex" }.Select(s => new Extension(s)).ToHashSet();
+
         public static readonly Extension EXE = new Extension(".exe");
         public static readonly Extension OMOD = new Extension(".omod");
         public static readonly Extension ESM = new Extension(".esm");
@@ -62,19 +62,19 @@ namespace Wabbajack.Common
         public static string DOWNLOAD_PATH_MAGIC_BACK = "{--||DOWNLOAD_PATH_MAGIC_BACK||--}";
         public static string DOWNLOAD_PATH_MAGIC_DOUBLE_BACK = "{--||DOWNLOAD_PATH_MAGIC_DOUBLE_BACK||--}";
         public static string DOWNLOAD_PATH_MAGIC_FORWARD = "{--||DOWNLOAD_PATH_MAGIC_FORWARD||--}";
-        
+
         public static Uri GITHUB_REPO_RELEASES = new Uri("https://api.github.com/repos/wabbajack-tools/wabbajack/releases");
 
 
         public static string AppName = "Wabbajack";
 
-        public static HashSet<RelativePath> GameESMs = new []
+        public static HashSet<RelativePath> GameESMs = new[]
         {
             // Skyrim LE/SE
-            "Skyrim.esm", 
-            "Update.esm", 
-            "Dawnguard.esm", 
-            "HearthFires.esm", 
+            "Skyrim.esm",
+            "Update.esm",
+            "Dawnguard.esm",
+            "HearthFires.esm",
             "Dragonborn.esm",
 
             // Fallout 4
@@ -103,7 +103,7 @@ namespace Wabbajack.Common
                 return headerString;
             }
         }
-        
+
         public static RelativePath MetaIni = new RelativePath("meta.ini");
         public static Extension IniExtension = new Extension(".ini");
 
@@ -111,7 +111,9 @@ namespace Wabbajack.Common
         public static Extension MetaFileExtension = new Extension(".meta");
         public const string ModListExtensionString = ".wabbajack";
         public static Extension ModListExtension = new Extension(ModListExtensionString);
-        public static AbsolutePath LocalAppDataPath => new AbsolutePath(Path.Combine(KnownFolders.LocalAppData.Path, "Wabbajack"));
+
+        public static AbsolutePath LocalAppDataPath => new AbsolutePath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.DoNotVerify), "Wabbajack"));
+
         public static AbsolutePath FaviconCacheFolderPath => LocalAppDataPath.Combine("favicons");
         public static string MetricsKeyHeader => "x-metrics-key";
 
@@ -164,7 +166,7 @@ namespace Wabbajack.Common
         public static string AuthorAPIKeyFile = "author-api-key.txt";
 
         public static Uri WabbajackOrg = new Uri("https://www.wabbajack.org/");
-        
+
         public static long UPLOADED_FILE_BLOCK_SIZE = (long)1024 * 1024 * 2;
 
     }

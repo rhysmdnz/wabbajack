@@ -18,7 +18,7 @@ namespace Wabbajack.Common
             : this(new FileInfo((string)GetTempFilePath()))
         {
         }
-        
+
         public TempFile(AbsolutePath path, bool deleteAfter = true, bool createFolder = true)
             : this(new FileInfo((string)path))
         {
@@ -26,7 +26,7 @@ namespace Wabbajack.Common
 
         private static AbsolutePath GetTempFilePath()
         {
-            var path = (@"temp\" + Guid.NewGuid()).RelativeTo(AbsolutePath.EntryPoint).WithExtension(Consts.TempExtension);
+            var path = (@"temp/" + Guid.NewGuid()).RelativeTo(AbsolutePath.EntryPoint).WithExtension(Consts.TempExtension);
             path.Parent.CreateDirectory();
             return path;
         }
@@ -42,7 +42,7 @@ namespace Wabbajack.Common
         }
 
         public TempFile(Extension ext)
-        :this(new FileInfo((string)GetTempFilePath().WithExtension(ext)))
+        : this(new FileInfo((string)GetTempFilePath().WithExtension(ext)))
         {
         }
 

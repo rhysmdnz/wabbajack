@@ -2,12 +2,13 @@
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using Directory = Alphaleonis.Win32.Filesystem.Directory;
+// using Directory = Alphaleonis.Win32.Filesystem.Directory;
+using Directory = System.IO.Directory;
 using Path = Alphaleonis.Win32.Filesystem.Path;
 
 namespace Wabbajack.Common
 {
-  [JsonConverter(typeof(Utils.RelativePathConverter))]
+    [JsonConverter(typeof(Utils.RelativePathConverter))]
     public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<RelativePath>
     {
         private readonly string? _nullable_path;
@@ -20,7 +21,8 @@ namespace Wabbajack.Common
                 _nullable_path = null;
                 return;
             }
-            var trimmed = path.Replace("/", "\\").Trim('\\');
+            var trimmed = path.Replace("\\", "/").Trim('/');
+            // var trimmed = path;
             if (string.IsNullOrEmpty(trimmed))
             {
                 _nullable_path = null;
@@ -50,8 +52,8 @@ namespace Wabbajack.Common
         {
             return (RelativePath)Guid.NewGuid().ToString();
         }
-        
-        
+
+
         public RelativePath Munge()
         {
             return (RelativePath)_path.Replace('\\', '_').Replace('/', '_').Replace(':', '_');
@@ -100,14 +102,14 @@ namespace Wabbajack.Common
         public RelativePath FileName => new RelativePath(Path.GetFileName(_path));
 
         public RelativePath FileNameWithoutExtension => (RelativePath)Path.GetFileNameWithoutExtension(_path);
-        
+
         public RelativePath TopParent
         {
             get
             {
                 var curr = this;
-                
-                while (curr.Parent != default) 
+
+                while (curr.Parent != default)
                     curr = curr.Parent;
 
                 return curr;
@@ -138,16 +140,16 @@ namespace Wabbajack.Common
         {
             return _path.StartsWith(s, StringComparison.OrdinalIgnoreCase);
         }
-        
+
         public bool StartsWith(RelativePath s)
         {
             return _path.StartsWith(s._path, StringComparison.OrdinalIgnoreCase);
         }
-        public RelativePath Combine(params RelativePath[] paths )
+        public RelativePath Combine(params RelativePath[] paths)
         {
             return (RelativePath)Path.Combine(paths.Select(p => (string)p).Cons(_path).ToArray());
         }
-        
+
         public RelativePath Combine(params string[] paths)
         {
             return (RelativePath)Path.Combine(paths.Cons(_path).ToArray());

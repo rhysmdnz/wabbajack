@@ -72,8 +72,8 @@ namespace Wabbajack.CLI.Verbs
                         using (var installer = new MO2Installer(
                                 archive: Location,
                                 modList: AInstaller.LoadFromFile(Location),
-                                outputFolder: new AbsolutePath("C:\\Users\\Rhys\\Documents\\SecretLivingSkyrimLocation\\Game"),
-                                downloadFolder: new AbsolutePath("C:\\Users\\Rhys\\Documents\\SecretLivingSkyrimLocation\\Download"),
+                                outputFolder: new AbsolutePath("/home/rhys/Documents/SecretLivingSkyrimLocation/Game"),
+                                downloadFolder: new AbsolutePath("/home/rhys/Documents/SecretLivingSkyrimLocation/Download"),
                                 //parameters: SystemParametersConstructor.Create()))
                                 parameters: null))
                         {
