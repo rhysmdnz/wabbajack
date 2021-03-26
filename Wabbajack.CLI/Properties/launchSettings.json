@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Wabbajack.CLI": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "download-modlist -n \"Ultimate VR Essentials\""
     }
   }
 }

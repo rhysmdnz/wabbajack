@@ -37,7 +37,7 @@ namespace Wabbajack.Lib
         
         public ModlistMetadata? Metadata { get; set; }
 
-        public MO2Installer(AbsolutePath archive, ModList modList, AbsolutePath outputFolder, AbsolutePath downloadFolder, SystemParameters parameters)
+        public MO2Installer(AbsolutePath archive, ModList modList, AbsolutePath outputFolder, AbsolutePath downloadFolder, SystemParameters? parameters)
             : base(
                   archive: archive,
                   modList: modList,
