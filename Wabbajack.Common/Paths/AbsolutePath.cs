@@ -53,7 +53,7 @@ namespace Wabbajack.Common
 
         public AbsolutePath(string path, bool skipValidation = false)
         {
-            _nullable_path = path.Replace("\\", "/").TrimEnd('/');
+            _nullable_path = path.Replace("\\", "/");
             // _nullable_path = path;
             if (!skipValidation)
             {

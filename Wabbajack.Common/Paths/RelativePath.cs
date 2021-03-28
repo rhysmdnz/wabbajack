@@ -21,7 +21,7 @@ namespace Wabbajack.Common
                 _nullable_path = null;
                 return;
             }
-            var trimmed = path.Replace("\\", "/").Trim('/');
+            var trimmed = path.Replace("\\", "/");
             // var trimmed = path;
             if (string.IsNullOrEmpty(trimmed))
             {

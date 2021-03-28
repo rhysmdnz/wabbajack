@@ -23,8 +23,16 @@ namespace Wabbajack.CLI.Verbs
                 .ObserveOnGuiThread()
                 .SelectTask(async msg =>
                 {
-                    CLIUtils.Log("Can't handle user intervention on the CLI");
-                    msg.Cancel();
+                    switch (msg)
+                    {
+                        case ConfirmUpdateOfExistingInstall c:
+                            c.Confirm();
+                            break;
+                        default:
+                            CLIUtils.Log("Can't handle user intervention on the CLI");
+                            msg.Cancel();
+                            break;
+                    }
                 }
                 )
                 .Subscribe();
@@ -56,6 +64,7 @@ namespace Wabbajack.CLI.Verbs
 
                         ModlistMetadata? sourceModListMetadata = null;
 
+
                         var metadataPath = Location.WithExtension(Consts.ModlistMetadataExtension);
                         if (metadataPath.Exists)
                         {
@@ -69,16 +78,23 @@ namespace Wabbajack.CLI.Verbs
                             }
                         }
 
+                        var parameters = new SystemParameters();
+                        parameters.ScreenHeight = 1440;
+                        parameters.ScreenWidth = 2560;
+                        parameters.SystemMemorySize = 16000000000;
+                        parameters.SystemPageSize = 16000000000;
+                        parameters.VideoMemorySize = 16000000000 / 2;
+
                         using (var installer = new MO2Installer(
                                 archive: Location,
                                 modList: AInstaller.LoadFromFile(Location),
                                 outputFolder: new AbsolutePath("/home/rhys/Documents/SecretLivingSkyrimLocation/Game"),
                                 downloadFolder: new AbsolutePath("/home/rhys/Documents/SecretLivingSkyrimLocation/Download"),
-                                //parameters: SystemParametersConstructor.Create()))
-                                parameters: null))
+                        // parameters: SystemParametersConstructor.Create()))
+                        parameters: parameters))
                         {
                             installer.Metadata = sourceModListMetadata;
-                            installer.UseCompression = true;
+                            installer.UseCompression = false;
                             //Parent.MWVM.Settings.Performance.SetProcessorSettings(installer);
 
                             await Task.Run(async () =>
